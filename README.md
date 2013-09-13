@@ -12,4 +12,5 @@ Topics:
 Organisation:
 - DCM: here only scripts to run DCM analysis are provided since DCM code is part of SPM (available elsewhere)
 - NMSW: neural modelling of sleep-wake
+- ActiG: handling of actigraphic data
 
