@@ -1,4 +1,4 @@
-function [name ACTI resolution startTime nbDays] = readFile(datafile, ifile, bufferPoint)
+function [name ACTI resolution startTime nbDays] = readFile(datafile, ifile)
 
 strline = '--------------------------';
 
@@ -22,17 +22,16 @@ switch(str2num(data{4}{1}))
         resolution = 300; %s
 end;
 
-%All the actimetric data are put in the array ACTI without
-%taking the first hour into account
+%All the actimetric data are put in the array ACTI
 
-ACTI = zeros(1, size(data, 1) - 9 - (bufferPoint / resolution));
+ACTI = zeros(1, size(data, 1) - 9);
 
-for i = (9 + (bufferPoint / resolution)):(size(data, 1))
+for i = 9:(size(data, 1))
     ACTI(i) = str2num(data{i}{1});
 end;
 
 nbDays = str2num(data{5}{1});
-startTime = datenum(data{2}{1}) + datenum(0, 0, 0, str2num(data{3}{1}(1:2)), str2num(data{3}{1}(4:5)), 0) + bufferPoint; %s (quand l'enregistrement a débuté)
+startTime = datenum(data{2}{1}) + datenum(0, 0, 0, str2num(data{3}{1}(1:2)), str2num(data{3}{1}(4:5)), 0); %s (quand l'enregistrement a débuté)
 
 
 

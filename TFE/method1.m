@@ -1,7 +1,7 @@
 function [] = method1(option)
 
 ASLEEP = 0;
-AWAKE = 1000;
+AWAKE = 1;
 
 if ~nargin
     option = spm_input('Action : ',1,'m','Individual|Group',[1,2],0); %Individual : option = 1, Group : option = 2
@@ -10,8 +10,10 @@ end;
 close all;
 
 origdir = '/home/miguel/Cours/TFE/';
-datadir = fullfile(origdir, 'data');
+%datadir = fullfile(origdir, 'data');
+datadir = fullfile(origdir, 'Actigraphy_TMS');
 strline = '--------------------------';
+nbSecPerDays = 86400;
 
 switch(option)
     case 1
@@ -25,12 +27,14 @@ switch(option)
         
         for ifile = 1:nbFiles
             
-            [fileName ACTI ACTI2 resolution sleepToWake wakeToSleep t] = getData(datafile, ifile);
+            [fileName ACTI ACTI2 nbDays resolution startTime sleepToWake wakeToSleep t] = getData(datafile, ifile);
             
+            nbDataPerDays = nbSecPerDays / resolution;
             SW = zeros(length(ACTI2), 1);
             state = AWAKE;
-            threshold = [10, 2 * sleepToWake / 3];
+            threshold = [wakeToSleep / 3, 2 * sleepToWake / 3];
             activity = 0;
+            nbNights = 0;
             
             %On initialise activity et SW (on considère que le sujet est
             %éveillé au début de l'étude)
@@ -38,7 +42,7 @@ switch(option)
                 activity = activity + ACTI2(i);
                 SW(i) = AWAKE;
             end;
-            
+                        
             for i = wakeToSleep+1:length(ACTI2)
                 %Lorsque le sujet est considéré éveillé
                 if state == AWAKE
@@ -57,7 +61,11 @@ switch(option)
                             SW(j) = ASLEEP;
                         end;
                         state = ASLEEP;
+                        nbNights = nbNights + 1;
+                    else
+                        SW(i) = state;
                     end;
+                    
                 
                 %Lorsque le sujet est considéré endormi
                 elseif state == ASLEEP
@@ -74,20 +82,47 @@ switch(option)
                             SW(j) = AWAKE;
                         end;
                         state = AWAKE;
+                    else
+                        SW(i) = state;
                     end;
                 end;
             end;
             
+            % ! AFFICHAGE GRAPHIQUE DONNEES BRUTES ET SW !
             i = 1:length(ACTI2);
             figure;
             set(gcf,'Position', [30 50 1200 650]);
             clf;
             hold on;
             plot(i, ACTI, 'm');
-            plot(i, ACTI2, 'g');
-            plot(i, SW, 'b');
+            %plot(i, 1500 * ACTI2, 'g');
+            plot(i, 1000 * SW, 'b');
             title(fileName, 'interpreter', 'none');
             
+            
+            % ! AFFICHAGE SUR CERCLE !
+            
+            radius = 1;
+            colors = ['b', 'r']; %Bleu = sommeil, Rouge = éveil
+            ang = getStartAngle(startTime);
+            angStep = 2 * pi / nbDataPerDays; %delta theta entre deux points consécutifs sur le cercle
+            origin = [0, 0]; %Centre du cercle
+            
+            figure;
+            hold on;
+            plot(linspace(0, 0, 2001), -10:0.01:10, 'k');
+            plot(-10:0.01:10, linspace(0, 0, 2001), 'k');
+            for i = 1:length(SW)
+                if ang <= - 3 * pi / 2
+                    radius = radius + 0.5;
+                    ang = pi / 2;
+                end;
+                
+                circle(origin(1), origin(2), radius, ang, colors(SW(i) + 1));
+                ang = ang - angStep;
+            end;
+            
+            %saveas(gcf, '~/sleep', 'png');
             
         end;
     
