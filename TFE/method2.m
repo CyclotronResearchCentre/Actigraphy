@@ -29,10 +29,11 @@ switch(option)
             
             [fileName ACTI ACTI2 nbDays resolution startTime sleepToWake wakeToSleep t] = getData(datafile, ifile);
             
+            
             nbDataPerDays = nbSecPerDays / resolution;
             SW = zeros(length(ACTI), 1);
             state = AWAKE;
-            threshold = mean(ACTI) / 3
+            threshold = [mean(ACTI) / 3, 2 * mean(ACTI) / 3];
             activity = 0;
             nbNights = 0;
             
@@ -58,7 +59,7 @@ switch(option)
                     
                     %Si on a trop peu d'activité sur la fenêtre -> le sujet
                     %dort
-                    if meanActivity < threshold
+                    if meanActivity < threshold(1)
                         for j = i - wakeToSleep:i
                             SW(j) = ASLEEP;
                         end;
@@ -81,7 +82,7 @@ switch(option)
                     
                     %Si on a trop d'activité sur la fenêtre -> le sujet est
                     %éveillé
-                    if meanActivity > threshold
+                    if meanActivity > threshold(2)
                         for j = i - sleepToWake:i
                             SW(j) = AWAKE;
                         end;
@@ -92,14 +93,57 @@ switch(option)
                 end;
             end;
             
-            % ! AFFICHAGE GRAPHIQUE DONNEES BRUTES ET SW !
+            %On supprime les périodes de sommeil / d'éveil trop courtes
+            
+            
+            OK = 0;
+            while OK == 0
+                OK = 1;
+                transitions = abs(diff(SW));
+                state = SW(1);
+                transitions = find(transitions == 1);
+                
+                for i = 1:length(transitions)-1
+                    state ~= state;
+                    if transitions(i + 1) - transitions(i) < 200 && OK == 1
+                        SW(transitions(i):transitions(i+1)) = state;
+                        OK = 0;
+                    end;
+                end;
+            end;
+            
+            [sleepTime wakeTime] = getNights(SW, startTime, nbDataPerDays); %s
+            bedTime = getBedTime(ACTI, sleepTime, startTime, nbDataPerDays); %s
+            upTime = getUpTime(ACTI, wakeTime, startTime, nbDataPerDays); %s
+            assumedSleepTime = upTime - bedTime;
+            actualSleepTime = wakeTime - sleepTime;
+            actualSleep = actualSleepTime ./ assumedSleepTime;
+            actualWakeTime = assumedSleepTime - actualSleepTime;
+            actualWake = actualWakeTime ./ assumedSleepTime;
+            [sleepDuration meanDuration stdDev] = getDuration(sleepTime, wakeTime, resolution, nbDataPerDays);
+            
+            saveData(fileName, sleepTime, wakeTime, bedTime, upTime, assumedSleepTime, actualSleepTime, actualSleep, actualWakeTime, actualWake, sleepDuration, meanDuration, stdDev);
+            
+%             figure;
+%             hold on;
+%             x = meanDuration-5*stdDev:1:meanDuration+5*stdDev;
+%             y = gaussmf(x, [stdDev, meanDuration]);
+%             plot(x / 3600, y);
+
+            
+            % ! AFFICHAGE GRAPHIQUE DONNEES BRUTES ET SW ET BED/UP TIMES !
             i = 1:length(ACTI);
             figure;
             set(gcf,'Position', [30 50 1200 650]);
             clf;
             hold on;
             plot(i, ACTI, 'm');
-            plot(i, linspace(threshold, threshold, length(ACTI)), 'g');
+            for j = 1:length(bedTime)
+                plot(linspace(double((bedTime(j) - startTime) * nbDataPerDays), double((bedTime(j) - startTime) * nbDataPerDays), length(ACTI)), linspace(0, 10000, length(ACTI)), 'k');
+            end;
+            for j = 1:length(upTime)
+                plot(linspace(double((upTime(j) - startTime) * nbDataPerDays), double((upTime(j) - startTime) * nbDataPerDays), length(ACTI)), linspace(0, 10000, length(ACTI)), 'k');
+            end;
             plot(i, 1000 * SW, 'b');
             title(fileName, 'interpreter', 'none');
             
@@ -114,16 +158,17 @@ switch(option)
             
             figure;
             hold on;
-            plot(linspace(0, 0, 2001), -10:0.01:10, 'k');
-            plot(-10:0.01:10, linspace(0, 0, 2001), 'k');
+            plot(linspace(0, 0, 20001), -100:0.01:100, 'k');
+            plot(-100:0.01:100, linspace(0, 0, 20001), 'k');
             for i = 1:length(SW)
                 if ang <= - 3 * pi / 2
-                    radius = radius + 0.5;
+                    %radius = radius + 0.5;
                     ang = pi / 2;
                 end;
                 
                 circle(origin(1), origin(2), radius, ang, colors(SW(i) + 1));
                 ang = ang - angStep;
+                radius = radius + 0.01;
             end;
             
             %saveas(gcf, '~/sleep', 'png');
