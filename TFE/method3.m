@@ -1,4 +1,4 @@
-function [] = method2(option)
+function [] = method3(option)
 
 ASLEEP = 0;
 AWAKE = 1;
@@ -10,7 +10,6 @@ end;
 close all;
 
 origdir = '/home/miguel/Cours/TFE/';
-%datadir = fullfile(origdir, 'data');
 datadir = fullfile(origdir, 'Actigraphy_TMS');
 strline = '--------------------------';
 nbSecPerDays = 86400;
@@ -33,7 +32,7 @@ switch(option)
             nbDataPerDays = nbSecPerDays / resolution;
             SW = zeros(length(ACTI), 1);
             state = AWAKE;
-            threshold = [mean(ACTI) / 3, 2 * mean(ACTI) / 3];
+            threshold = [median(ACTI) / 4, 2 * median(ACTI) / 3];
             activity = 0;
             nbNights = 0;
             
@@ -46,20 +45,12 @@ switch(option)
                                     
             for i = wakeToSleep+1:length(ACTI)
                 %Lorsque le sujet est considéré éveillé
-                if state == AWAKE
-                    %On supprime la "première" entrée et on ajoute
-                    %l'activité actuelle
-                    if i - wakeToSleep > 1
-                        activity = activity - ACTI(i - wakeToSleep) + ACTI(i);
-                    else
-                        activity = activity + ACTI(i);
-                    end;
-                    
-                    meanActivity = activity / wakeToSleep;
+                if state == AWAKE                    
+                    medianActivity = median(ACTI(i-wakeToSleep:i));
                     
                     %Si on a trop peu d'activité sur la fenêtre -> le sujet
                     %dort
-                    if meanActivity < threshold(1)
+                    if medianActivity < threshold(1)
                         for j = i - wakeToSleep:i
                             SW(j) = ASLEEP;
                         end;
@@ -72,17 +63,12 @@ switch(option)
                 
                 %Lorsque le sujet est considéré endormi
                 elseif state == ASLEEP
-                    if i - sleepToWake > 1
-                        activity = activity - ACTI(i - sleepToWake) + ACTI(i);
-                    else
-                        activity = activity + ACTI(i);
-                    end;
                     
-                    meanActivity = activity / sleepToWake;
+                    medianActivity = median(ACTI(i-sleepToWake:i));
                     
                     %Si on a trop d'activité sur la fenêtre -> le sujet est
                     %éveillé
-                    if meanActivity > threshold(2)
+                    if medianActivity > threshold(2)
                         for j = i - sleepToWake:i
                             SW(j) = AWAKE;
                         end;
@@ -112,18 +98,18 @@ switch(option)
                 end;
             end;
             
-            [sleepTime wakeTime] = getNights(SW, startTime, nbDataPerDays); %s
-            bedTime = getBedTime(ACTI, sleepTime, startTime, nbDataPerDays); %s
-            upTime = getUpTime(ACTI, wakeTime, startTime, nbDataPerDays); %s
-            assumedSleepTime = upTime - bedTime;
-            actualSleepTime = wakeTime - sleepTime;
-            actualSleep = actualSleepTime ./ assumedSleepTime;
-            actualWakeTime = assumedSleepTime - actualSleepTime;
-            actualWake = actualWakeTime ./ assumedSleepTime;
-            [sleepDuration meanDuration stdDev] = getDuration(sleepTime, wakeTime, resolution, nbDataPerDays);
-            
-            saveData(fileName, sleepTime, wakeTime, bedTime, upTime, assumedSleepTime, actualSleepTime, actualSleep, actualWakeTime, actualWake, sleepDuration, meanDuration, stdDev);
-            
+%             [sleepTime wakeTime] = getNights(SW, startTime, nbDataPerDays); %s
+%             bedTime = getBedTime(ACTI, sleepTime, startTime, nbDataPerDays); %s
+%             upTime = getUpTime(ACTI, wakeTime, startTime, nbDataPerDays); %s
+%             assumedSleepTime = upTime - bedTime;
+%             actualSleepTime = wakeTime - sleepTime;
+%             actualSleep = actualSleepTime ./ assumedSleepTime;
+%             actualWakeTime = assumedSleepTime - actualSleepTime;
+%             actualWake = actualWakeTime ./ assumedSleepTime;
+%             [sleepDuration meanDuration stdDev] = getDuration(sleepTime, wakeTime, resolution, nbDataPerDays);
+%             
+%             saveData(fileName, sleepTime, wakeTime, bedTime, upTime, assumedSleepTime, actualSleepTime, actualSleep, actualWakeTime, actualWake, sleepDuration, meanDuration, stdDev);
+%             
 %             figure;
 %             hold on;
 %             x = meanDuration-5*stdDev:1:meanDuration+5*stdDev;
@@ -138,12 +124,12 @@ switch(option)
             clf;
             hold on;
             plot(i, ACTI, 'm');
-            for j = 1:length(bedTime)
-                plot(linspace(double((bedTime(j) - startTime) * nbDataPerDays), double((bedTime(j) - startTime) * nbDataPerDays), length(ACTI)), linspace(0, 10000, length(ACTI)), 'k');
-            end;
-            for j = 1:length(upTime)
-                plot(linspace(double((upTime(j) - startTime) * nbDataPerDays), double((upTime(j) - startTime) * nbDataPerDays), length(ACTI)), linspace(0, 10000, length(ACTI)), 'k');
-            end;
+%             for j = 1:length(bedTime)
+%                 plot(linspace(double((bedTime(j) - startTime) * nbDataPerDays), double((bedTime(j) - startTime) * nbDataPerDays), length(ACTI)), linspace(0, 10000, length(ACTI)), 'k');
+%             end;
+%             for j = 1:length(upTime)
+%                 plot(linspace(double((upTime(j) - startTime) * nbDataPerDays), double((upTime(j) - startTime) * nbDataPerDays), length(ACTI)), linspace(0, 10000, length(ACTI)), 'k');
+%             end;
             plot(i, 1000 * SW, 'b');
             title(fileName, 'interpreter', 'none');
             
@@ -158,18 +144,39 @@ switch(option)
             
             figure;
             hold on;
+            axis square;
             plot(linspace(0, 0, 20001), -100:0.01:100, 'k');
             plot(-100:0.01:100, linspace(0, 0, 20001), 'k');
+            state = SW(1);
+            sleepCoordinates = [0; 0]; %Coordinates of the transitions Wake -> Sleep
+            wakeCoordinates = [0; 0]; %Coordinates of the transitions Sleep -> Wake
             for i = 1:length(SW)
                 if ang <= - 3 * pi / 2
-                    %radius = radius + 0.5;
                     ang = pi / 2;
                 end;
                 
                 circle(origin(1), origin(2), radius, ang, colors(SW(i) + 1));
+                
+                %A ring is put at every transition (Sleep -> Wake or Wake
+                %-> Sleep)
+                if (SW(i) ~= state)
+                    [x y] = drawRing(origin(1), origin(2), radius, ang, 'k');
+                    if (SW(i) == ASLEEP)
+                        sleepCoordinates = [sleepCoordinates [x; y]];
+                    else
+                        wakeCoordinates = [wakeCoordinates [x; y]];
+                    end;
+                end;
+                
+                state = SW(i);
                 ang = ang - angStep;
                 radius = radius + 0.01;
             end;
+            
+            x_mean = mean(sleepCoordinates(1, :));
+            y_mean = mean(sleepCoordinates(2, :));
+            
+            plot(-1:0.1:5, (y_mean / x_mean) .* (-1:0.1:5), 'k');
             
             %saveas(gcf, '~/sleep', 'png');
             

@@ -1,7 +1,7 @@
 function [error] = saveData(fileName, sleepTime, wakeTime, bedTime, upTime, assumedSleepTime, actualSleepTime, actualSleep, actualWakeTime, actualWake, sleepDuration, meanDuration, stdDev)
 
 error = 0;
-fileName = [fileName ' - Exctracted data'];
+fileName = [fileName ' - Extracted data'];
 file = fopen(fileName, 'w');
 
 for i = 1:length(sleepTime)
