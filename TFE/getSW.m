@@ -3,7 +3,7 @@ function [SW] = getSW(ACTI, wakeToSleep, sleepToWake)
 constantes
 
 SW = zeros(length(ACTI), 1); %Sleep / Wake vector
-threshold = [median(ACTI) / 4, 2 * median(ACTI) / 3];
+threshold = [5 * median(ACTI) / 12, 5 * median(ACTI) / 12];
 activity = 0; %activity = sum of the counts in the sliding window
 nbNights = 0;
 

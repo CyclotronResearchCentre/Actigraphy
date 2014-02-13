@@ -1,12 +1,13 @@
-function [bedDate upDate sleepDate wakeDate] = readXLS(fileName, startDate)
+function [bedDate upDate sleepDate wakeDate] = readXLS(fileName)
 
-fileName = strcat(fileName, '_sleep analysis.xls');
+fileName = strcat('XLS/', fileName, '_sleep analysis.xls');
 %Warnings are set off because xlsread shows a useless warning message
 warning('off', 'all');
 data = xlsread(fileName);
 warning('off', 'all');
 
 startDay = num2str(data(1, 1));
+%If there are 7 digits in the number (exple : 01012001)
 if numel(startDay) == 7
     startDate = datenum(str2num(startDay(4:7)), str2num(startDay(2:3)), str2num(startDay(1)), 0, 0, 0);
 else
@@ -28,14 +29,15 @@ wakeDate = zeros(1, nbDays);
 days = 0;
 
 for i = 1:nbDays
-    bed = '';
-    sleep = '';
-    up = '';
-    wake = '';
     
     bed = num2str(bedTime(i));
-    if numel(bed) == 2
+    %If there is 1 digit in the number (exple : 00h04)
+    if numel(bed) == 1
+        bedDate(i) = datenum(0, 0, 0, 0, str2num(bed(1)), 0) + days + 1;
+    %If there are 2 digits in the number (exple : 00h14)
+    elseif numel(bed) == 2
         bedDate(i) = datenum(0, 0, 0, 0, str2num(bed(1:2)), 0) + days + 1;
+    %If there are 3 digits in the number (exple : 01h14)
     elseif numel(num2str(bed)) == 3
         bedDate(i) = datenum(0, 0, 0, str2num(bed(1)), str2num(bed(2:3)), 0) + days + 1;
     else
@@ -43,10 +45,10 @@ for i = 1:nbDays
     end;
     
     sleep = num2str(sleepTime(i));
-    %If there are 2 digits in the number (exple : 00h14)
-    if numel(sleep) == 2
+    if numel(sleep) == 1
+        sleepDate(i) = datenum(0, 0, 0, 0, str2num(sleep(1)), 0) + days + 1;
+    elseif numel(sleep) == 2
         sleepDate(i) = datenum(0, 0, 0, 0, str2num(sleep(1:2)), 0) + days + 1;
-    %If there are 3 digits in the number (exple : 01h14)
     elseif numel(num2str(sleep)) == 3
         sleepDate(i) = datenum(0, 0, 0, str2num(sleep(1)), str2num(sleep(2:3)), 0) + days + 1;
     else
@@ -56,7 +58,9 @@ for i = 1:nbDays
     days = days + 1;
     
     up = num2str(upTime(i));
-    if numel(up) == 2
+    if numel(up) == 1
+        upDate(i) = datenum(0, 0, 0, 0, str2num(up(1)), 0) + days;
+    elseif numel(up) == 2
         upDate(i) = datenum(0, 0, 0, 0, str2num(up(1:2)), 0) + days;
     elseif numel(num2str(up)) == 3
         upDate(i) = datenum(0, 0, 0, str2num(up(1)), str2num(up(2:3)), 0) + days;
@@ -65,7 +69,9 @@ for i = 1:nbDays
     end;
     
     wake = num2str(wakeTime(i));
-    if numel(wake) == 2
+    if numel(wake) == 1
+        wakeDate(i) = datenum(0, 0, 0, 0, str2num(wake(1)), 0) + days;
+    elseif numel(wake) == 2
         wakeDate(i) = datenum(0, 0, 0, 0, str2num(wake(1:2)), 0) + days;
     elseif numel(num2str(wake)) == 3
         wakeDate(i) = datenum(0, 0, 0, str2num(wake(1)), str2num(wake(2:3)), 0) + days;
