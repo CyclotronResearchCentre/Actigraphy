@@ -4,7 +4,7 @@ constantes
 
 [bedDate upDate sleepDate wakeDate] = readXLS(fileName);
 
-trueSW = zeros(length(ACTI), 1);
+trueSW = zeros(1, length(ACTI));
 state = AWAKE;
 
 sleepIndex = 1;

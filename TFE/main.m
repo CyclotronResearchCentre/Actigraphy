@@ -28,17 +28,23 @@ switch(option)
             %Get raw data from thefile 
             [fileName ACTI nbDays sleepToWake wakeToSleep resolution startTime t] = getData(datafile, ifile);
             nbDataPerDays = nbSecPerDays / resolution;
+            %ACTI = preprocessing(ACTI);
 
-
-            ACTI = preprocessing(ACTI);
-
+            
             %Determine if the subject is awake or asleep at each period of
             %time
-            SW = getSW(ACTI, wakeToSleep, sleepToWake);
+            %SW = getSW(ACTI, wakeToSleep, sleepToWake);
             
             %The epochs of sleep or being awake that are too small are
             %removed
-            SW = modifySW(SW);
+            %SW = modifySW(SW);
+            
+            %Crespo Algorithm
+            SW = crespoPreprocessing(ACTI);
+            SW = crespoProcessing(ACTI, SW);
+
+            
+
             
             [trueSW trueBedDate trueUpDate trueSleepDate trueWakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays);
             
@@ -48,8 +54,8 @@ switch(option)
 
             
             [sleepDate wakeDate] = getNights(SW, startTime, nbDataPerDays); %s
-            bedDate = getBedTime(ACTI, sleepDate, startTime, nbDataPerDays); %s
-            upDate = getUpTime(ACTI, wakeDate, startTime, nbDataPerDays); %s
+%             bedDate = getBedTime(ACTI, sleepDate, startTime, nbDataPerDays); %s
+%             upDate = getUpTime(ACTI, wakeDate, startTime, nbDataPerDays); %s
 %             assumedSleepTime = upTime - bedTime;
 %             actualSleepTime = wakeTime - sleepTime;
 %             actualSleep = actualSleepTime ./ assumedSleepTime;
@@ -65,11 +71,10 @@ switch(option)
 %             y = gaussmf(x, [stdDev, meanDuration]);
 %             plot(x / 3600, y);
 
-
-            plotSW(fileName, ACTI, SW, trueSW);
+            plotSW(fileName, ACTI, SW, trueSW, resolution, t);
             %plotCircle(SW, startTime, nbDataPerDays);
             
-            stats(SW, trueSW, sleepDate, trueSleepDate, wakeDate, trueWakeDate);
+            %stats(SW, trueSW, wakeDate, trueWakeDate, sleepDate, trueSleepDate);
 
             
             %saveas(gcf, '~/sleep', 'png');

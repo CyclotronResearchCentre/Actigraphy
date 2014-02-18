@@ -1,4 +1,4 @@
-function stats(SW, trueSW, sleepDate, trueSleepDate, wakeDate, trueWakeDate)
+function stats(SW, trueSW, wakeDate, trueWakeDate, sleepDate, trueSleepDate)
 
 %% Confusion matrix
 
