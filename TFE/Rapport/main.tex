@@ -1,0 +1,338 @@
+\documentclass[a4paper,10pt]{article}
+  %\documentclass[a4paper,10pt]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hhline}
+\usepackage{array}
+\usepackage[titletoc,title]{appendix}
+\usepackage[pdfborder={0 0 0}]{hyperref}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcolumntype{G}{!{\vrule width 2pt}}
+\newlength\savewidth
+ \newcommand\Ghline{%
+	\noalign{\global\savewidth\arrayrulewidth\global\arrayrulewidth2pt}%
+	\hline
+	\noalign{\global\arrayrulewidth\savewidth}}
+
+
+
+\pdfinfo{%
+  /Title    (Description des biorythmes d'une population normale jeune à partir de données actimétriques)
+  /Author   (Miguel Gonzalez)
+  /Creator  (Miguel Gonzalez)
+  /Producer (Miguel Gonzalez)
+  /Subject  (TFE)
+  /Keywords ()
+}
+
+
+
+\begin{document}
+ \input{./title.tex}
+ 
+ \tableofcontents
+ \newpage
+
+\section{Ce que je dois savoir}
+
+\begin{itemize}
+\item Profil des participants à l'étude
+\item Procédures (choses imposées, poignet sur lequel l'acti a été placé, ...)
+\item Actimètre utilisé
+\item Mode utilisé : Zero Crossing Mode, Time Above Threshold Mode ou Proportional Integration Mode
+\end{itemize}
+
+\section{Conventions}
+
+\begin{itemize}
+\item \textbf{...Day} : Jour + Mois + Année de la période (en s)
+\item \textbf{...Time} : Heure + Minute + Seconde de la période (en s)
+\item \textbf{...Date} : Jour + Mois + Année + Heure + Minute + Seconde de la période (en s)
+\item \textbf{...DateStr} : Jour + Mois + Année + Heure + Minute + Seconde de la période (format YYYY - MM - DD HH:MM:SS)
+\end{itemize}
+
+\section{State of the art}
+
+\subsection{Webster's Algorithm}
+
+\paragraph{}
+Webster\cite{Webster1982} utilise un actigraphe qui fournit une valeur d'activité toutes les 2 secondes. Ce choix est issu d'un compromis entre la recherche de précision (Webster souhaitait pouvoir identifier si la sujet était éveillé ou endormi pour chaque minute) et la réalité pratique.
+
+\paragraph{}
+Webster a proposé une forme d'algorithme généralisée :
+
+\begin{equation}
+\label{Webster_equationInit}
+\begin{split}
+D = S * [&W(1)T(1) + W(2) T(2) + W(3) T(3) \\
+         &+ W(4) T(4) + W(5) T(5) + W(6) T(6)]
+\end{split}
+\end{equation} 
+
+où S est un facteur d'échelle, W(1) ... W(6) des facteurs de poids, T(1) la somme des activités pour les 30 périodes de 2 secondes dans la minute observée, T(2) la valeur de l'activité maximale dans la minute, T(3) la somme des 2 activités les plus élevées dans la minute, séparées par au moins 30s et T(4) la somme des 8 activités les plus élevées dans la minute.
+
+T(5) et T(6) sont définis comme des sommes pondérées des T(1), ..., T(4) sur les 4 minutes précédentes et les 2 minutes qui suivent :
+
+\begin{equation}
+T(5) = W(5, 1) T(i - 1) + W(5,2) T(i - 2) + W(5, 3) T(i - 3) + W(5, 4) T(i - 4)
+\end{equation}
+\begin{equation}
+T(6) = W(6, 1) T(i + 1) + W(6, 2) T(i + 2)
+\end{equation}
+
+où T(i - 1) est la valeur de T(1) dans la minute qui précède, T(i + 1) la valeur de T(1) dans la minute qui suit, etc.
+
+\paragraph{}
+Une minute était notée comme \textit{éveil} si $D \geq 1.0$.
+
+\paragraph{}
+Après avoir obtenu des résultats préliminaires, il est devenu apparent que la meilleure solution était obtenue en fixant $W(1) = W(3) = W(4) = 0$. L'équation (\ref{Webster_equationInit}) peut donc être réécrite sous la forme
+
+\begin{equation}
+\begin{split}
+D = S * &[W(1) T(i-4) + W(2) T(i - 3) + W(3) T(i - 2)\\
+         &+ W(4) T(i - 1) + W(5) T(i) + W(6) T(i+1) + W(7) T(i+2)]
+\end{split}
+\end{equation}
+
+où les W sont des facteurs de poids, T(i) la valeur maximale d'activité dans la minute, T(i - 1) dans la minute qui précède, T(i + 1) dans celle qui suit, etc.
+
+En appliquant cette équation, les paramètres optimaux ont pu être définis, ce qui a finalement donné :
+
+\begin{equation}
+\begin{split}
+D = 0.025 * &[0.15 T(i-4) + 0.15 T(i - 3) + 0.15 T(i - 2)\\
+         &+ 0.08 T(i - 1) + 0.21 T(i) + 0.12 T(i+1) + 0.13 T(i+2)]
+\end{split}
+\end{equation}
+
+\paragraph{}
+En utilisant cet algorithme, Webster est arrivé à un taux de concordance entre les valeurs de l'algorithme et celles de l'EEG de 94.46\%. Il est cependant à noter que les données qui ont été utilisées pour obtenir ce taux de concordance sont les mêmes qui celles qui ont été utilisées pour obtenir les paramètres optimaux. Ceci amène un biais de sélection (voir Annexe \ref{sec:bias}) qui nous amène à penser que le taux de concordance sur un nouveau set de données serait légérement moins bon sur un nouveau set de données.
+
+
+
+\subsection{Sadeh's Algorithm}
+
+\paragraph{}
+3 states are defined by Sadeh et al. \cite{Sadeh1995} : wake, active slepe and quiet sleep. \\
+
+To determine the state of the patient at each period, some parameters are defined \cite{Sadeh1995} :
+\begin{quotation}
+\em 
+\item \textbf{nzm} : number of minutes with zero activity in the global window (the scored minute plus the 5 min that precede it and follow it);
+\item \textbf{ntl} : number of minutes with low activity (nonzero but lower than 100 counts) in the global window;
+\item \textbf{nth} : number of minutes with high activity (equal or greater than 100 counts) in the global window;
+\item \textbf{s}$_5$ : standard deviation of the window of the scored minutes plus the 5 min preceding it;
+\item \textbf{m}$_1$ : mean activity level of the scored minute and the preceding minute;
+\item \textbf{lw}$_4$ : the lowest activity count during the window that includes the scored minute plus the following 4 min.  
+\end{quotation}
+
+\paragraph{}
+The probabilities of each state are defined as :
+
+\begin{equation}
+\begin{split}
+PQS =& 15.94 + 3.223\: nzw + 2.138\: ntl + 1.1036\: nth \\
+      &+ 0.0466\: s_5 + 0.00292\: m_1 + 0.0106\: lw_4
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+PAS =& 5.134 + 1.696\: nzw + 2.062\: ntl + 0.9568\: nth \\
+      &+ 0.0585\: s_5 + 0.00556\: m_1 + 0.0105\: lw_4
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+PAW =& -25.638 + 1.714\: nzw + 3.0168\: ntl + 4.064\: nth \\
+      &+ 0.1066\: s_5 + 0.0386\: m_1 + 0.016\: lw_4
+\end{split}
+\end{equation}
+
+where $PQS$ is the probability to be in the quiet sleep state, $PAS$ in the active sleep state and $PAW$ in the wake state.
+
+\paragraph{}
+For every minute of the recorded signal, $PQS$, $PAS$ and $PAW$ are computed and the state of the patient is determined by the greatest of these three values.
+
+\subsection{Cole-Kripke Algorithm}
+
+\subsection{UCSD Algorithm} 
+
+\subsection{Pires Algorithm}
+
+\subsection{Crespo Algorithm}
+
+\paragraph{}
+The Crespo Algorithm\cite{Crespo2012} is composed of two main stages. The first one is called the 'preprocessing stage' and produces an estimate of the sleep-wake periods. The second one is the 'processing and decision stage'. This stage uses the output of the preprocessing stage and produces the final identitification of the sleep-wake periods.
+
+\paragraph{}
+The signal from the actigraph is denoted as $s(n)$, or as $\mathbf{s} = (s_1, s_2, ..., s_N)$ where $N$ is the number of elements in $\mathbf{s}$ (i.e. the number of measures available). The sampling rate for all the actigraphs used by Crespo et al. is one sample per minute.
+
+\paragraph{}
+All the equations in the section come from \cite{Crespo2012}.
+
+\subsubsection{Preprocessing stage}
+\label{subsubsec:preprocessing}
+\paragraph{Signal conditioning based on empirical probability model\\}
+Firstly, a function $F\{.\}$ is applied to $s(n)$ in order to determine the regions containing more than $\zeta$ consecutives zeroes. The indexes of these zeros are then put in the vector $\mathbf{a}$.
+
+\begin{equation}
+\mathbf{a} = F\{s(n), \zeta\}
+\end{equation}
+
+\paragraph{}
+Some probabilistic methods were used by Crespo et al. to determine the value of $\zeta$. These methods are explained in the section \ref{subsubsec:crespoProb}.
+\paragraph{}
+Secondly, all the $s(i)$ where $i$ is contained in $\mathbf{a}$ are replaced by the value $s_t$ where $s_t$ is the $t^{th}$percentile of s(n). The new signal obtained is then stored in $x(n)$.
+
+\begin{equation}
+x(j) = \left\{
+    \begin{array}{ll}
+        s_t & \mbox{if } j \in \mathbf{a} \\
+        s(j) & \mbox{if } j \notin \mathbf{a}
+    \end{array}
+\right.
+\end{equation}
+
+Before applying a median operator to $x(n)$, the signal is padded, in order to facilitate this filtering. 
+
+\begin{equation}
+\label{padding}
+x_p = (\underbrace{m, m, \ldots, m}_{30 * \alpha}, x_1, x_2, \ldots, x_N, \underbrace{m, m, \ldots, m}_{30 * \alpha})
+\end{equation}
+
+\paragraph{}
+$(30 * \alpha)$ elements are added at the beggining and the end of $x(n)$. All these elements have the same value which is $m = max(s(n))$. $\alpha$ is a paramater that can be modified to optimize the algorithm. It is used to define the window length of the median filtering, $L_w = (60 * \alpha + 1)$ and it represents the length of the window in hours. \\
+
+Depending on the value of $\alpha$, the determination of the sleep-wake periods will be more or less accurate. A large $\alpha$ gives the right number of transitions while a small $\alpha$ gives a more precise time for these transitions. The value of $\alpha$ is determined as a tradeoff between these two properties of the result.
+
+
+\paragraph{Rank-order processing and decision logic\\}
+Now that the signal is padded, the median operator $M\{.\}$ may be applied.
+
+\begin{equation}
+\begin{split}
+x_f(n) = & M\{x_p(n - 30 * \alpha), x_p(n - 30 * \alpha + 1), \ldots,\\
+         & x_p(n - 1), x_p(n), x_p(n+1), \ldots, x_p(n + 30 * \alpha)\}
+\end{split}
+\end{equation}
+
+\paragraph{}
+\label{T-threshold}
+The obtained signal $x_f(n)$ is filtered by a rank-order thresholding operator $T\{.\}$.
+
+\begin{equation}
+y_1(n) = T\{x_f(n)\} = \left\{
+    \begin{array}{ll}
+        1 & \mbox{if } x_f(n) > p \\
+        0 & \mbox{otherwise}
+    \end{array}
+\right.
+\end{equation}
+
+where the threshold $p$ is the percentile of $x_f(n)$ corresponding to $\frac{h_s}{24}*100\%$. $h_s$ is the average duration of sleep per night (in hours).
+
+\paragraph{Morphological filtering}
+\label{closing-opening}
+Finally, the signal is filtered by a morphological closing followed by a morphological opening. Explanations about morphological operations may be found in the Annex \ref{sec:morphology}.
+
+This operation leads to the deletion of incorrect transitions (i.e. transitions that are too short)
+
+\begin{equation}
+y_e(n) = (y_1(n) \bullet L_p) \circ L_p
+\end{equation}
+
+where $L_p$ is the length of the window in minutes.
+
+\paragraph{}
+$y_e(n)$ is the output of the preprocessing stage. It is a rough estimator of the sleep-wake periods and will be used in the processing stage to get a more refined model.
+
+\subsubsection{Processing}
+
+\paragraph{Model-based data validation}
+A function $G\{.\}$ is applied to the original signal $s(n)$ in order to determine the regions containing more than $\zeta^r$ consecutives zeroes during estimated rest periods and more than $\zeta^a$ consecutives zeroes during estimated wake periods. The indexes of these zeros are then put in the vector $\mathbf{b}$.
+
+\begin{equation}
+\mathbf{b} = G\{s(n), \zeta^r, \zeta^a\}
+\end{equation}
+
+\paragraph{Adaptive rank-order processing and decision logic}
+As done in the preprocessing stage, the signal is padded to facilitate the filtering that comes next. 60 elements are added at the beggining and the end of $s(n)$. All these elements have the same value which is $m = max(s(n))$.
+
+\begin{equation}
+x_{sp} = (\underbrace{m, m, \ldots, m}_{60}, s_1, s_2, \ldots, s_N, \underbrace{m, m, \ldots, m}_{60})
+\end{equation}
+
+\paragraph{}
+The adaptive median filter $M_a\{.\}$ with a varying window length is then applied on $x_{sp}$. The output $x_{fa}(i)$ of this filter is the median of the values of $x_{sp}(n)$ in the window centered about $i$, that are not contained in $\mathbf{b}$.
+The window begins with a length of one hour and it increases until it reaches the maximum length $L_w$.
+
+\begin{equation}
+x_{fa} = M_a\{x_{sp}(n), \mathbf{b}, L_w\}
+\end{equation}
+
+\paragraph{}
+The next step is a thresholding by the rank-order operator $T\{.\}$ defined in the preprocessing stage (\ref{T-threshold})
+
+\begin{equation}
+y_2(n) = T\{x_{fa}(n)\} = \left\{
+    \begin{array}{ll}
+        1 & \mbox{if } x_{fa}(n) > p \\
+        0 & \mbox{otherwise}
+    \end{array}
+\right.\end{equation}
+
+\paragraph{Morphological filtering}
+The last step of the processing stage is the morphological filtering of $y_2(n)$ by a closing-opening, like done at the end of the preprocessing stage (\ref{closing-opening}). The difference here is that the window length $L_p'$ is double in size to $L_p$ : $L_p' = 2 * (L_p - 1) + 1$.
+
+\begin{equation}
+o(n) = (y_1(n) \bullet L_p') \circ L_p'
+\end{equation}
+
+\paragraph{}
+$o(n)$ is the final output of the algorithm. It has a value for each period of the signal. An awake state is represented by a 1 while a rest state is represented by a 0.
+
+\subsubsection{Probabilistic models}
+\label{subsubsec:crespoProb}
+
+\section{My algorithm}
+\subsection{Preprocessing stage}
+
+\paragraph{}
+The aim of the preprocessing stage is to get a rough estimate of the sleep-wake periods. It must give the correct number of transitions but the times when these transitions happens does not need to be too precise. This goal fits the preprocessing stage (\ref{subsubsec:preprocessing}) of the Crespo algorithm.
+
+%Réexpliquer l'algorithme de Crespo + donner les valeurs de alpha, Lp, etc.
+
+\subsection{Processing stage}
+
+\paragraph{}
+The output $y_e(n)$ of the previous stage is an estimate of the final output. It has the right number of transitions but the exact times of these transitions is not precisely determined. The aim of the processing stage is to make those transition times more precise.
+
+\paragraph{}
+A window of 2 hours before and after the estimated transition times is analyzed.
+
+\section{Results}
+
+%Afficher 2 sets de graphiques : un avec un petit alpha et un avec un big alpha
+
+\newpage
+\section{Annexes}
+\appendix
+\section{Selection bias}
+\label{sec:bias}
+\section{Morphological operations}
+\label{sec:morphology}
+\section{Statistic methods}
+\label{sec:statMethods}
+\bibliography{biblio}
+\bibliographystyle{unsrt}
+ 
+\end{document}
+
+
