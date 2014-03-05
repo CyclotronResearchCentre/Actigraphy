@@ -2,52 +2,37 @@ function [SW] = getSW(ACTI, wakeToSleep, sleepToWake)
 
 constantes
 
-SW = zeros(1, length(ACTI)); %Sleep / Wake vector
-threshold = [5 * median(ACTI) / 12, 5 * median(ACTI) / 12];
-activity = 0; %activity = sum of the counts in the sliding window
-nbNights = 0;
+windowLength = wakeToSleep;
 
+SW = zeros(1, length(ACTI)); %Sleep / Wake vector
+threshold = prctile(ACTI, percentile);
 
 %Activity and SW are initialized (the subject is considered to
 %be awake when the study begins)
 state = AWAKE;
-for i = 1:wakeToSleep
-    activity = activity + ACTI(i);
+for i = 1:windowLength
     SW(i) = AWAKE;
 end;
 
 for i = wakeToSleep+1:length(ACTI)
     %When the subject is awake
-    if state == AWAKE
-        medianActivity = median(ACTI(i-wakeToSleep:i));
-        
-        %If the activity in the window is too low
-        if medianActivity < threshold(1)
-            for j = i - wakeToSleep:i
-                SW(j) = ASLEEP;
-            end;
-            state = ASLEEP;
-            nbNights = nbNights + 1;
-        else
-            SW(i) = state;
+    windowActivity = prctile(ACTI(i-windowLength:i), percentile);
+    
+    %If the activity in the window is too low
+    if windowActivity < threshold && state == AWAKE
+        for j = i - windowLength:i
+            SW(j) = ASLEEP;
         end;
+        state = ASLEEP;
         
-        
-        %Lorsque le sujet est considéré endormi
-    elseif state == ASLEEP
-        
-        medianActivity = median(ACTI(i-sleepToWake:i));
-        
-        %Si on a trop d'activité sur la fenêtre -> le sujet est
-        %éveillé
-        if medianActivity > threshold(2)
-            for j = i - sleepToWake:i
-                SW(j) = AWAKE;
-            end;
-            state = AWAKE;
-        else
-            SW(i) = state;
+    elseif windowActivity > threshold && state == ASLEEP
+        for j = i - windowLength:i
+            SW(j) = AWAKE;
         end;
+        state = AWAKE;
+        
+    else
+        SW(i) = state;
     end;
 end;
 

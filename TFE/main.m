@@ -28,6 +28,13 @@ switch(option)
             %Get raw data from thefile 
             [fileName ACTI nbDays sleepToWake wakeToSleep resolution startTime t] = getData(datafile, ifile);
             nbDataPerDays = nbSecPerDays / resolution;
+            [trueSW trueBedDate trueUpDate trueSleepDate trueWakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays);
+            
+            %Sometime, all the nights weren't scored manually, so they need
+            %to be removed from ACTI and trueSW
+            [ACTI trueSW startTime t] = modifyLength(ACTI, trueSW, startTime, t, resolution);
+            
+            
             %ACTI = preprocessing(ACTI);
 
             
@@ -39,19 +46,15 @@ switch(option)
             %removed
             %SW = modifySW(SW);
             
-            %Crespo Algorithm
-            SW = crespoPreprocessing(ACTI);
-            SW = crespoProcessing(ACTI, SW);
-
+            %Preprocessing stage
+            [SW x xf y1] = crespoPreprocessing(ACTI, resolution);
+            %plotPreprocessing(fileName, ACTI, SW, x, xf, y1, resolution, t);
+            plotSW(fileName, ACTI, SW, trueSW, resolution, t); %Show the results after the preprocessing stage only
             
-
+            %Processing stage
+            %SW = crespoProcessing(ACTI, SW, resolution);
+            [SW] = processing(ACTI, SW, resolution);
             
-            [trueSW trueBedDate trueUpDate trueSleepDate trueWakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays);
-            
-            %Sometime, all the nights weren't scored manually so SW has to
-            %be modified the remove these nights
-            SW = modifySWLength(SW, trueSW);
-
             
             [sleepDate wakeDate] = getNights(SW, startTime, nbDataPerDays); %s
 %             bedDate = getBedTime(ACTI, sleepDate, startTime, nbDataPerDays); %s
@@ -72,12 +75,13 @@ switch(option)
 %             plot(x / 3600, y);
 
             plotSW(fileName, ACTI, SW, trueSW, resolution, t);
-            %plotCircle(SW, startTime, nbDataPerDays);
+            %plotCircle(SW, trueSW, startTime, nbDataPerDays);
             
             %stats(SW, trueSW, wakeDate, trueWakeDate, sleepDate, trueSleepDate);
 
             
             %saveas(gcf, '~/sleep', 'png');
+            %saveXLS(wakeDate, sleepDate);
             
         end;
     

@@ -14,7 +14,6 @@ t = rem(t_abs, 1); %Relative time for each day of the acquisition
 
 nbDays = round(length(ACTI) * resolution / nbSecPerDays);
 
-
 fprintf('%s \n', strline);
 fprintf('Number of days : %d \n', nbDays);
 fprintf('Start time : %s \n', datestr(startTime));

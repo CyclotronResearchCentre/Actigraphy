@@ -9,7 +9,7 @@ filepath = datafile(ifile, :);
 fprintf(1, '%s \n', strline);
 fprintf(1, 'Processing file : %s \n', name);
 fprintf(1, '%s \n\n', strline);
-data = readcoglog(filepath); %lecture du fichier
+data = readActi(filepath); %lecture du fichier
 
 switch(str2num(data{4}{1}))
     case 2
@@ -24,9 +24,9 @@ end;
 
 %All the actimetric data are put in the array ACTI
 
-ACTI = zeros(1, size(data, 1) - 9);
+ACTI = zeros(1, length(data) - 9);
 
-for i = 9:(size(data, 1))
+for i = 9:(length(data))
     ACTI(i) = str2num(data{i}{1});
 end;
 

@@ -1,10 +1,10 @@
 function [trueSW bedDate upDate sleepDate wakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays)
 
-constantes
+constantes;
 
 [bedDate upDate sleepDate wakeDate] = readXLS(fileName);
 
-trueSW = zeros(1, length(ACTI));
+trueSW = zeros(1, length(ACTI)); %Sleep-Wake scored by hand
 state = AWAKE;
 
 sleepIndex = 1;
