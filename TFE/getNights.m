@@ -9,10 +9,11 @@ state = SW(1);
 sleepTime = [];
 wakeTime = [];
 
+%For every transition, we find if the transition is WAKE -> SLEEP or
+%SLEEP -> WAKE
 for i = 1:length(SW)-1
-    
     if(transitions(i) == 1)
-        if(state == ASLEEP)
+        if state == ASLEEP
             wakeTime = [wakeTime time];
             state = AWAKE;
         else

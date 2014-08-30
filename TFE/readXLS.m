@@ -7,6 +7,7 @@ data = xlsread(fileName);
 warning('off', 'all');
 
 startDay = num2str(data(1, 1));
+
 %If there are 7 digits in the number (exple : 01012001)
 if numel(startDay) == 7
     startDate = datenum(str2num(startDay(4:7)), str2num(startDay(2:3)), str2num(startDay(1)), 0, 0, 0);

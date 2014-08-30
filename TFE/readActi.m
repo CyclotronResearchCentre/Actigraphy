@@ -5,7 +5,7 @@ file = fopen(fileName);
 lines = {};
 i = 1;
 
-%Reads the file
+%Reads the file line by line
 while 1
     line = fgetl(file);
     if line == -1
@@ -18,7 +18,7 @@ while 1
 end;
 fclose(file);
 
-%Breaks every line in words
+%Breaks every line in words and puts everything in the array data
 data = {};
 
 for i = 1:length(lines)

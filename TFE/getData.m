@@ -1,16 +1,14 @@
-function [fileName ACTI nbDays sleepToWake wakeToSleep resolution startTime t] = getData(datafile, ifile)
+function [fileName ACTI nbDays resolution startTime t] = getData(file)
 
 constantes
 
 % ! OUVERTURE ET LECTURE DU FICHIER !
-[fileName ACTI resolution startTime nbDays] = readFile(datafile, ifile);
+[fileName ACTI resolution startTime nbDays] = readFile(file);
 
-% ! CALCUL DE NOUVEAUX PARAMETRES !
-sleepToWake = sleepToWakeSec / resolution; %s -> nb de pas de temps
-wakeToSleep = wakeToSleepSec / resolution; %s -> nb de pas de temps
-
-t_abs = startTime + [0:resolution/nbSecPerDays:resolution/nbSecPerDays*(length(ACTI) - 1)]; %Absolute time of the acquisition
-t = rem(t_abs, 1); %Relative time for each day of the acquisition
+%Absolute time of the acquisition
+t_abs = startTime + [0:resolution/nbSecPerDays:resolution/nbSecPerDays*(length(ACTI) - 1)];
+%Relative time for each day of the acquisition (will be used for the plots)
+t = rem(t_abs, 1); 
 
 nbDays = round(length(ACTI) * resolution / nbSecPerDays);
 

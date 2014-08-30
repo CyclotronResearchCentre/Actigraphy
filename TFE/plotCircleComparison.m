@@ -1,14 +1,15 @@
 function plotCircle(SW, trueSW, startTime, nbDataPerDays)
 
-% ! PLOT ON A CIRCLE !
+% ! AFFICHAGE SUR CERCLE !
 
 constantes
 
 radius = 1;
-colors = ['b', 'r']; %BLUE = sleep, RED = wake
+colors = ['b', 'r']; %Bleu = sommeil, Rouge = éveil
 ang = getStartAngle(startTime);
-angStep = 2 * pi / nbDataPerDays; % Δtheta between two successives points on the circle
-origin = [0, 0]; %Center of the circle
+angStep = 2 * pi / nbDataPerDays; % Δtheta entre deux points consécutifs sur le cercle
+origin = [0, 0]; %Centre du cercle
+
 
 figure;
 hold on;
@@ -22,14 +23,12 @@ axis equal;
 
 sleepCoordinates = [0; 0]; %Coordinates of the transitions Wake -> Sleep
 wakeCoordinates = [0; 0]; %Coordinates of the transitions Sleep -> Wake
+
+trueSleepCoordinates = [];
+trueWakeCoordinates = [];
+
 state = SW(1);
-
-if ~isempty(trueSW)
-    trueSleepCoordinates = [];
-    trueWakeCoordinates = [];
-    trueState = trueSW(1);
-end;
-
+trueState = trueSW(1);
 for i = 1:length(SW)
     %End of day i = beginning of day i+1
     if ang <= - 3 * pi / 2
@@ -68,7 +67,7 @@ for i = 1:length(SW)
     radius = radius + 0.01;
 end;
 
-plot(-radius-10:0.1:radius+10, -radius-10:0.1:radius+10, 'w'); %Useless plot to increase the window size ( yeah, it's not beautiful )
+plot(-radius-10:0.1:radius+10, -radius-10:0.1:radius+10, 'w'); %Useless plot to increase the window size ( :puke: )
 
 %Plot a line that fits the sleep times
 x_max = max(sleepCoordinates(1, :));
@@ -79,7 +78,8 @@ y_mean = mean(sleepCoordinates(2, :));
 
 sleepSlope = y_mean / x_mean;
 
-p(1) = plot(0:0.1:x_max, sleepSlope .* (0:0.1:x_max), 'k');
+p(1) = plot(x_min:0.1:x_max, sleepSlope .* (x_min:0.1:x_max), 'k');
+legend('Estimated sleep time')
 
 %Plot a line that fits the up times
 x_max = max(wakeCoordinates(1, :));
@@ -90,7 +90,7 @@ y_mean = mean(wakeCoordinates(2, :));
 
 wakeSlope = y_mean / x_mean;
 
-plot(0:0.1:x_max, wakeSlope .* (0:0.1:x_max), 'k');
+plot(x_min:0.1:x_max, wakeSlope .* (x_min:0.1:x_max), 'k');
 
 if ~isempty(trueSW)
     %Plot a line that fits the true sleep times
@@ -102,7 +102,7 @@ if ~isempty(trueSW)
     
     trueSleepSlope = y_mean / x_mean;
     
-    p(2) = plot(0:0.1:x_max, trueSleepSlope .* (0:0.1:x_max), 'g');
+    p(2) = plot(x_min:0.1:x_max, trueSleepSlope .* (x_min:0.1:x_max), 'g');
     
     %Plot a line that fits the true up times
     x_max = max(trueWakeCoordinates(1, :));
@@ -118,12 +118,14 @@ if ~isempty(trueSW)
     legend(p, 'Estimated times', 'True times');
     
     sleepAngleTime = getAngle(sleepSlope, trueSleepSlope);
-    wakeAngleTime = getAngle(wakeSlope, trueWakeSlope);    
+    wakeAngleTime = getAngle(wakeSlope, trueWakeSlope);
+    
     fprintf('Sleep Angle (minutes) : %f \n', sleepAngleTime);
     fprintf('Wake Angle (minutes) : %f \n\n', wakeAngleTime);
 end;
 
 %Add some text informations
+
 text(-9, radius, 'Midnight');
 text(radius, 0, '6AM');
 text(-7, -radius, 'Noon');

@@ -1,20 +1,19 @@
-function plotSW(fileName, ACTI, SW, trueSW, resolution, t)
+function plotSWReport(fileName, ACTI, SW, trueSW, resolution, t)
 
-%If we are in comparison mode, we show 4 subplots
 if isempty(trueSW)
     nbPlots = 2;
 else
     nbPlots = 4;
 end;
 
-% modelFunction = @(params, r) params(1) * sin(params(2) * r + params(3));
-% paramInit = [1 0.005 0];
-% r = 1:length(ACTI);
-% 
-% functionParams = nlinfit(r, SW, modelFunction, paramInit);
+modelFunction = @(params, r) params(1) * sin(params(2) * r + params(3));
+paramInit = [1 0.005 0];
+r = 1:length(ACTI);
+
+functionParams = nlinfit(r, SW, modelFunction, paramInit);
 
 
-% ! PLOTS THE RAW ACTIGRAPHIC DATA AND SW AND BED/UP TIMES !
+% ! AFFICHAGE GRAPHIQUE DONNEES BRUTES ET SW ET BED/UP TIMES !
 
 constantes;
 
@@ -29,18 +28,37 @@ hold on;
 
 %Plot Raw data
 plot(ACTI, 'm');
+i = 1;
+while i < length(SW);
+    state = SW(i);
+    begin = i;
+    
+    while i < length(SW) && SW(i) == state
+        i = i + 1;
+    end;
+    
+    stop = i;
+    if state == AWAKE || state == ASLEEP
+        x = [begin + 60 begin + 60 stop - 60 stop - 60];
+        y = [0 4000 4000 0];
+        fill(x, y, 'b');
+        h = findobj(gca, 'Type', 'patch');
+        set(h, 'FaceColor', 'g', 'EdgeColor', 'w', 'facealpha', 0.55);
+    end;
+    
+end;
+
 title(strcat('Raw data'));
 xlabel('Time');
 set(gca, 'XTick', xValues);
 set(gca, 'XTickLabel', datestr(t(xValues), 15), 'FontSize', 6); %Display the time in 'HH:MM' format for every 'a' displayed
 set(gca, 'YTick', yValues);
 
-
 %Plot the SW from the algorithm
 ax(2) = subplot(nbPlots, 1, 2);
 bar(SW);
 hold on;
-% sinusoid = modelFunction(functionParams, r) + functionParams(1);
+sinusoid = modelFunction(functionParams, r) + functionParams(1);
 %plot(sinusoid / max(sinusoid), 'r');
 hold off;
 title('Estimated sleep-wake');
@@ -48,6 +66,18 @@ xlabel('Time');
 set(gca,'XTick', xValues);
 set(gca,'XTickLabel', datestr(t(xValues),15), 'FontSize', 6);
 set(gca, 'YTick', [0 1]);
+
+figure;
+plot(ACTI(1:5), 'm');
+
+figure;
+plot(ACTI(6:10), 'm');
+
+figure;
+plot(ACTI(11:15), 'm');
+
+figure;
+plot(ACTI(16:20), 'm');
 
 if nbPlots == 4
     %plot the SW from the scorer
