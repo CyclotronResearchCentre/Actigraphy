@@ -1,16 +1,16 @@
-NeuroModel
+Actigraphy
 ==========
 
 Administrators:
-- Fabian Le Bourdiec
 - Christophe Phillips
 
 
-Topics:
-"modelling neuronal activity" which covers different levels of abstractions from whole brain system down to individual neurons interaction.
+Topics: "Automatic actigraphic data scoring".
+-------
+In other words, given actigraphic recodings, detect the sleep/wake periods in an automatic way.
 
-Organisation:
-- DCM: here only scripts to run DCM analysis are provided since DCM code is part of SPM (available elsewhere)
-- NMSW: neural modelling of sleep-wake
-- ActiG: handling of actigraphic data
-
+Limitations/warnings:
+---------------------
+So far 
+- the development were tested on only one kind of actigraphic recordings
+- it works (and assumes!) when sleep patterns are regular from a 'normal healthy' subject
