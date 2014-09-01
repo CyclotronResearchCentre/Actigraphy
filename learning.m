@@ -1,6 +1,22 @@
 function [SW] = learning(ACTI, SW, resolution)
+%
+% FORMAT [SW] = learning(ACTI, SW, resolution)
+%
+% Refines previous solution using machine learning techniques
+% 
+% INPUT:
+% - ACTI       : actigraphic recording
+% - SW         : slaap/wake time series
+% - resolution : temporal resolution (in sec)
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
-constantes;
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
+
+% constantes;
+ASLEEP = crc_get_ara_defaults('acti.ASLEEP');
+AWAKE = crc_get_ara_defaults('acti.AWAKE');
 
 transitions = find(abs(diff(SW))==1);
 sleepIndex = [];
@@ -39,19 +55,21 @@ wake{b} = ACTI(index:end);
 
 features = [];
 windowLength = 15;
-i = 61; %Begins after 1 hour
+i = 61; % Begins after 1 hour
 
 while i < length(SW) - windowLength - 60
     SWwindow = SW(i:i+(windowLength-1));
     tmpWindow = SW(i-60:i+(windowLength-1)+60);
     
-    %Only the records 'far' (at least 1 hour after or before) a transition
-    %are taken into account
+    % Only the records 'far' (at least 1 hour after or before) a transition
+    % are taken into account
     if length(unique(tmpWindow)) == 1
         state = unique(SWwindow);
         window = ACTI(i:i+(windowLength-1));
         nbZeros = sum(window == 0);
-        features = [features; median(window) iqr(window) mean(window) std(window) max(window) min(window) mode(window) nbZeros state];
+        features = [features; ...
+            median(window) iqr(window) mean(window) std(window) ...
+            max(window) min(window) mode(window) nbZeros state]; %#ok<*AGROW>
         
     end;
     i = i + windowLength;
@@ -75,7 +93,7 @@ end;
 %     end;
 % end;
 
-%A training is done on the features
+% Training is done on the features
 inp = features(:, 1:end-1);
 out = features(:, end);
 net = newff([min(inp)' max(inp)'], [30 1], {'tansig' 'purelin'});
@@ -85,7 +103,7 @@ net = train(net, inp', out');
 
 back = 60 * (60 / resolution); %120 minute-long window
 
-%Finds more precise sleep times using the neural network
+% Finds more precise sleep times using the neural network
 for i = 1:length(sleepIndex)
     index = sleepIndex(i) - back;
     SW(index:sleepIndex(i)) = ASLEEP; %The whole window is set to sleep
@@ -106,7 +124,7 @@ for i = 1:length(sleepIndex)
     end;    
 end;
 
-%Finds more precise wake times using the neural network
+% Finds more precise wake times using the neural network
 for i = 1:length(wakeIndex)
     index = wakeIndex(i) - back;
     SW(index:index+back) = AWAKE; %The whole window is set to sleep
@@ -114,13 +132,13 @@ for i = 1:length(wakeIndex)
     for j = 0:2*back - 1
         window = ACTI(index+j:index+(windowLength-1)+j);
         nbZeros = sum(window == 0);
-        %Computes the features of the window        
+        % Computes the features of the window        
         windowFeatures = [median(window) iqr(window) mean(window) std(window) max(window) min(window) mode(window) nbZeros];
 
-        %Uses the neural network to find if the subject is awake or asleep        
+        % Uses the neural network to find if the subject is awake or asleep        
         Y = sim(net, windowFeatures');
         
-        %If the window is 'almost certainly' a awake window
+        % If the window is 'almost certainly' a awake window
         if Y < 0.01
             SW(index:index+(windowLength-1)+j) = ASLEEP;
         end;

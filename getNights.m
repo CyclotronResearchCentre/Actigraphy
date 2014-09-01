@@ -1,7 +1,17 @@
-function [sleepTime wakeTime] = getNights(SW, time, nbDataPerDays)
+function [sleepTime, wakeTime] = getNights(SW, time, nbDataPerDays)
+%
+% FORMAT [sleepTime wakeTime] = getNights(SW, time, nbDataPerDays)
+%
+% Get the sleep and wake times from the SW time series.
+% 
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
-ASLEEP = 0;
-AWAKE = 1;
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
+
+ASLEEP = crc_get_ara_defaults('acti.ASLEEP');
+AWAKE = crc_get_ara_defaults('acti.AWAKE');
 
 transitions = abs(diff(SW));
 state = SW(1);
@@ -14,7 +24,7 @@ wakeTime = [];
 for i = 1:length(SW)-1
     if(transitions(i) == 1)
         if state == ASLEEP
-            wakeTime = [wakeTime time];
+            wakeTime = [wakeTime time]; %#ok<*AGROW>
             state = AWAKE;
         else
             sleepTime = [sleepTime time];
@@ -24,13 +34,5 @@ for i = 1:length(SW)-1
         
     time = time + 1 / nbDataPerDays;
 end;
-
-% for i = 1:length(wakeTime)
-%     datestr(wakeTime(i))
-% end;
-% 
-% for i = 1:length(sleepTime)
-%     datestr(sleepTime(i))
-% end;
 
 end

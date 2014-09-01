@@ -1,14 +1,29 @@
-function plotCircle(SW, trueSW, startTime, nbDataPerDays)
+function plotCircle(SW, startTime, nbDataPerDays, trueSW)
+%
+% FORMAT plotCircle(SW, trueSW, startTime, nbDataPerDays)
+%
+% Plot the sleep/wake cycles, with wake/sleep times on a spiral.
+%
+% INPUT:
+% - SW            : sleep/wake time series
+% - startTime     : start time of recording
+% - nbDataPerDays : number of bins per day
+% - trueSW        : true sleep/wake time series, used as reference ([], def)
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
-% ! PLOT ON A CIRCLE !
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
-constantes
+% constantes
+if nargin < 4, trueSW = []; end
+ara_def = crc_get_ara_defaults('sw');
 
 radius = 1;
 colors = ['b', 'r']; %BLUE = sleep, RED = wake
 ang = getStartAngle(startTime);
-angStep = 2 * pi / nbDataPerDays; % Δtheta between two successives points on the circle
-origin = [0, 0]; %Center of the circle
+angStep = 2 * pi / nbDataPerDays; % theta between two successives points on the circle
+origin = [0, 0]; % Center of the circle
 
 figure;
 hold on;
@@ -31,18 +46,18 @@ if ~isempty(trueSW)
 end;
 
 for i = 1:length(SW)
-    %End of day i = beginning of day i+1
+    % End of day i = beginning of day i+1
     if ang <= - 3 * pi / 2
         ang = pi / 2;
     end;
     
     circle(origin(1), origin(2), radius, ang, colors(SW(i) + 1));
     
-    %A ring is put at every transition (Sleep -> Wake or Wake
-    %-> Sleep)
+    % A ring is put at every transition (Sleep -> Wake or Wake
+    % -> Sleep)
     if (SW(i) ~= state)
         [x y] = drawRing(origin(1), origin(2), radius, ang, 'k');
-        if (SW(i) == ASLEEP)
+        if (SW(i) == ara_def.ASLEEP)
             sleepCoordinates = [sleepCoordinates [x; y]];
         else
             wakeCoordinates = [wakeCoordinates [x; y]];
@@ -53,7 +68,7 @@ for i = 1:length(SW)
         %The same is done with the trueSW
         if (trueSW(i) ~= trueState)
             [x y] = drawRing(origin(1), origin(2), radius, ang, 'g');
-            if (trueSW(i) == ASLEEP)
+            if (trueSW(i) == ara_def.ASLEEP)
                 trueSleepCoordinates = [trueSleepCoordinates [x; y]];
             else
                 trueWakeCoordinates = [trueWakeCoordinates [x; y]];
@@ -68,7 +83,8 @@ for i = 1:length(SW)
     radius = radius + 0.01;
 end;
 
-plot(-radius-10:0.1:radius+10, -radius-10:0.1:radius+10, 'w'); %Useless plot to increase the window size ( yeah, it's not beautiful )
+plot(-radius-10:0.1:radius+10, -radius-10:0.1:radius+10, 'w'); 
+% Useless plot to increase the window size ( yeah, it's not beautiful )
 
 %Plot a line that fits the sleep times
 x_max = max(sleepCoordinates(1, :));
@@ -93,7 +109,7 @@ wakeSlope = y_mean / x_mean;
 plot(0:0.1:x_max, wakeSlope .* (0:0.1:x_max), 'k');
 
 if ~isempty(trueSW)
-    %Plot a line that fits the true sleep times
+    % Plot a line that fits the true sleep times
     x_max = max(trueSleepCoordinates(1, :));
     x_min = min(trueSleepCoordinates(1, :));
     
@@ -123,11 +139,12 @@ if ~isempty(trueSW)
     fprintf('Wake Angle (minutes) : %f \n\n', wakeAngleTime);
 end;
 
-%Add some text informations
+% Add some text informations
 text(-9, radius, 'Midnight');
 text(radius, 0, '6AM');
 text(-7, -radius, 'Noon');
 text(-radius-20, 0, '6PM');
 
-            
+axis off
+
 end

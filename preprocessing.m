@@ -1,20 +1,27 @@
-function [ACTI startTime t] = preprocessing(ACTI, startTime, t, resolution)
+function [ACTI,startTime,t] = preprocessing(ACTI, startTime, t, resolution)
+%
+% FORMAT [ACTI,startTime,t] = preprocessing(ACTI, startTime, t, resolution)
+%
+% Function to ensure that the actigraphic data start with some 'wake' time,
+%  i.e. some activity. 
+% If the ACTI begins with sleep or flat signal (e.g. when actimeter was
+% activated too early), it is modified until we reach some activity.
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
-%If the ACTI begins with sleep, it is modified until we reach some activity
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
-value = 180;
-%value = prctile(ACTI, 33);
-windowWidth = 80;
-threshold = 80;
-index = 0;
-for i = 1:length(ACTI)
-    %If the total activity in the window is higher than a set threshold,
-    %we consider that the recording start at this window
-    if sum(ACTI(i:i+windowWidth) > threshold) > 3 * windowWidth / 4
-        index = i;
-        break;
-    end;
-end;
+
+
+ara_def = crc_get_ara_defaults('preproc');
+windowWidth = ara_def.windowWidth ;
+threshold = ara_def.threshold ;
+
+index = 1;
+while sum(ACTI(index:index+windowWidth) > threshold) <= 3 * windowWidth / 4
+    index = index+1;
+end
 
 ACTI = ACTI(index+windowWidth:end);
 t = t(index+windowWidth:end);

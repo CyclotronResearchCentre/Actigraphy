@@ -1,9 +1,40 @@
-function [SW x xf y1] = crespoPreprocessing(ACTI, resolution)
+function [SW, x, xf, y1] = crespoPreprocessing(ACTI, resolution)
+%
+% FORMAT [SW, x, xf, y1] = crespoPreprocessing(ACTI, resolution)
+%
+% Performs the 'Crespo' analysis.
+%
+% INPUT:
+% - ACTI        : actigraphic time series
+% - resolution  : temporal resolution
+%
+% OUTPUT:
+% - SW  : Sleep/wake time series
+% - x   : time series processed, ACTI or some processed ACTI 
+% - xf  : filtered time series
+% - y1  : sleep/wake time series before morphological operation
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
-constantes;
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
-%Should be done for the true Crespo preprocessing but is useless due to our
-%own "pre-preprocessing" done in individual.m
+ara_def = crc_get_ara_defaults('crespo');
+% z = ara_def.a;
+% za = ara_def.za;
+% zr = ara_def.zr;
+winAlpha = ara_def.winAlpha;
+% Lp = ara_def.Lp;
+% Lw = ara_def.Lw;
+% hs = ara_def.hs;
+percentile = ara_def.percentile;
+
+ASLEEP = crc_get_ara_defaults('acti.ASLEEP');
+AWAKE = crc_get_ara_defaults('acti.AWAKE');
+
+
+% Should be done for the true Crespo preprocessing but is useless due to our
+% own "pre-preprocessing" done in individual.m
 
 % %% Apply F{.}
 % i = 1;

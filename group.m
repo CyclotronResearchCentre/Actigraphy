@@ -11,12 +11,12 @@ kappas = zeros(1, nbFiles);
 %date
 for ifile = 1:nbFiles
     file = datafile(ifile, :);
-    [errorRate sensitivity specificity kappa meanWakeError stdWakeError meanSleepError stdSleepError] = individual(file, 1, 'COMPARISON', false);
+    [stat_res] = individual(file, 1, 'COMPARISON', false);
     
-    errorRates(ifile) = errorRate;
-    sensitivities(ifile) = sensitivity;
-    specificities(ifile) = specificity;
-    kappas(ifile) = kappa;
+    errorRates(ifile) = stat_res.errorRate;
+    sensitivities(ifile) = stat_res.sensitivity;
+    specificities(ifile) = stat_res.specificity;
+    kappas(ifile) = stat_reskappa;
 end;
 
 %Retrieves some data for extreme cases (all the records set sleep, set to

@@ -1,13 +1,31 @@
-function [fileName ACTI nbDays resolution startTime t] = getData(file)
+function [fileName, ACTI, nbDays, resolution, startTime, t] = getData(file)
+%
+% FORMAT [fileName, ACTI, nbDays, resolution, startTime, t] = getData(file)
+% 
+% Read in the data:
+% - fileName   : file name of file (without dir & extension)
+% - ACTI       : (raw) actigraphic signal
+% - nbDays     : #days of recording
+% - resolution : recording resolution (in sec)
+% - startTime  : starting time
+% - t          : time regressor (Relative time for each day of the
+%                acquisition)
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
-constantes
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
-% ! OUVERTURE ET LECTURE DU FICHIER !
-[fileName ACTI resolution startTime nbDays] = readFile(file);
+ara_def = crc_get_ara_defaults('acti');
+nbSecPerDays = ara_def.nbSecPerDays;
+strline = ara_def.strline;
 
-%Absolute time of the acquisition
+% Opening and reading of the file
+[fileName, ACTI, resolution, startTime, nbDays] = readFile(file); %#ok<*NASGU>
+
+% Absolute time of the acquisition
 t_abs = startTime + [0:resolution/nbSecPerDays:resolution/nbSecPerDays*(length(ACTI) - 1)];
-%Relative time for each day of the acquisition (will be used for the plots)
+% Relative time for each day of the acquisition (will be used for the plots)
 t = rem(t_abs, 1); 
 
 nbDays = round(length(ACTI) * resolution / nbSecPerDays);
