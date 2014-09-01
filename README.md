@@ -5,7 +5,7 @@ Administrators:
 - Christophe Phillips
 
 
-Topics: "Automatic actigraphic data scoring".
+Topics: "Automatic actigraphic recording analysis".
 -------
 In other words, given actigraphic recodings, detect the sleep/wake periods in an automatic way.
 
