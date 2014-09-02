@@ -32,13 +32,11 @@ end;
 % 
 % functionParams = nlinfit(r, SW, modelFunction, paramInit);
 
-
 % ! PLOTS THE RAW ACTIGRAPHIC DATA AND SW AND BED/UP TIMES !
 
-% constantes;
-
-xValues = 1:1*3600/resolution:length(t); % 1 value every 3h
-yValues = 0:500:3000;
+xValues = 1:3*3600/resolution:length(t); % 1 value every 3h
+tmp = ceil(max(ACTI)/1000)*1000; % Rounded to top 1000
+yValues = 0:500:tmp;
 
 figure('name', fileName);
 ax(1) = subplot(nbPlots, 1, 1);

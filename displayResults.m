@@ -1,23 +1,38 @@
 function displayResults(errorRates, sensitivities, specificities)
+%
+% FORMAT displayResults(errorRates, sensitivities, specificities)
+%
+% Print out the results, as mean/max/min of error rate, sensitivity and
+% specificity for N data files
+% 
+% INPUT:
+% - errorRates, 
+% - sensitivities, 
+% - specificities
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
-constantes;
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
+
+strline = crc_get_ara_defaults('acti.strline');
 
 fprintf('%s \n', strline);
-fprintf('Erreur moyenne : %f \n', 1 - mean(errorRates));
-fprintf('Erreur max : %f \n', 1 - max(errorRates));
-fprintf('Erreur min : %f \n', 1 - min(errorRates));
+fprintf('Mean error : %f \n', 1 - mean(errorRates));
+fprintf('Max arror  : %f \n', 1 - max(errorRates));
+fprintf('Min error  : %f \n', 1 - min(errorRates));
 fprintf('%s \n \n', strline);
 
 fprintf('%s \n', strline);
-fprintf('Sensitivité moyenne : %f \n', mean(sensitivities));
-fprintf('Sensitivité max : %f \n', max(sensitivities));
-fprintf('Sensitivité min : %f \n', min(sensitivities));
+fprintf('Mean Sensitivity : %f \n', mean(sensitivities));
+fprintf('Max sensitivity  : %f \n', max(sensitivities));
+fprintf('Min sensitivity  : %f \n', min(sensitivities));
 fprintf('%s \n \n', strline);
 
 fprintf('%s \n', strline);
-fprintf('Spécificité moyenne : %f \n', mean(specificities));
-fprintf('Spécificité max : %f \n', max(specificities));
-fprintf('Spécificité min : %f \n', min(specificities));
+fprintf('Mean specificity : %f \n', mean(specificities));
+fprintf('Max specificity  : %f \n', max(specificities));
+fprintf('Min specificity  : %f \n', min(specificities));
 fprintf('%s \n \n', strline);
 
 end

@@ -1,4 +1,5 @@
 function [stat_res] = individual(datafile, nbFiles, mode, displayPlot)
+%
 % FORMAT [stat_res] = individual(datafile, nbFiles, mode, displayPlot)
 %
 % Processes a series of actigraphy files and displaying the results.

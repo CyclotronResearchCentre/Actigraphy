@@ -1,5 +1,33 @@
-function [allWakeErrorRates, allWakeSensitivities, allWakeSpecificities, allWakePrecision, allSleepErrorRates, allSleepSensitivities, allSleepSpecificities, allSleepPrecisions, allRandomErrorRates, allRandomSensitivities, allRandomSpecificities, allRandomPrecisions] = extremeCase(datafile, nbFiles)
+function [stats_res] = extremeCase(datafile, nbFiles)
+%
+% FORMAT [stats_res] = extremeCase(datafile, nbFiles)
+%
+% Performs the analysis but substitute the extimated S/W cycles with either
+% 'all sleep', 'all wake', and 'random s/w'.
+%
+% INPUT
+% - datafile : list of files to process
+% - nbFiles  : number of files
+%
+% OUTPUT
+% - stats_res : structure with the results
+%   . allWakeErrorRates, 
+%   . allWakeSensitivities, 
+%   . allWakeSpecificities, 
+%   . allWakePrecision, 
+%   . allSleepErrorRates, 
+%   . allSleepSensitivities, 
+%   . allSleepSpecificities, 
+%   . allSleepPrecisions, 
+%   . allRandomErrorRates, 
+%   . allRandomSensitivities, 
+%   . allRandomSpecificities, 
+%   . allRandomPrecisions
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 constantes;
 
 allWakeErrorRates = zeros(1, nbFiles);
@@ -18,17 +46,16 @@ allRandomSpecificities = zeros(1, nbFiles);
 allRandomPrecisions = zeros(1, nbFiles);
 
 for ifile = 1:nbFiles
-    trueSW = [];
     
     %Get raw data from the file    
     file = datafile(ifile, :);
-    [fileName ACTI nbDays sleepToWake wakeToSleep resolution startTime t] = getData(file);
+    [fileName, ACTI, nbDays, sleepToWake, wakeToSleep, resolution, startTime, t] = getData(file); %#ok<*ASGLU>
     nbDataPerDays = nbSecPerDays / resolution;
-    [trueSW trueBedDate trueUpDate trueSleepDate trueWakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays);
+    [trueSW, trueBedDate, trueUpDate, trueSleepDate, trueWakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays);
     
     %Sometime, all the nights weren't scored manually, so they need
     %to be removed from ACTI and trueSW
-    [ACTI trueSW startTime t] = modifyLength(ACTI, trueSW, startTime, t, resolution);
+    [ACTI, trueSW, startTime, t] = modifyLength(ACTI, trueSW, startTime, t, resolution);
     
     allSleepSW = zeros(1, length(ACTI));
     allWakeSW = ones(1, length(ACTI));
@@ -69,5 +96,19 @@ for ifile = 1:nbFiles
     allRandomSpecificities(ifile) = allRandomSpecificity;
     allRandomPrecisions(ifile) = allRandomPrecision;
 end;
+
+stats_res = struct( ...
+    'allWakeErrorRates', allWakeErrorRates, ...
+    'allWakeSensitivities', allWakeSensitivities, ...
+  	'allWakeSpecificities', allWakeSpecificities, ...
+    'allWakePrecision', allWakePrecision, ... 
+    'allSleepErrorRates', allSleepErrorRates, ...
+    'allSleepSensitivities', allSleepSensitivities, ...
+    'allSleepSpecificities', allSleepSpecificities, ...
+    'allSleepPrecisions', allSleepPrecisions, ...
+    'allRandomErrorRates', allRandomErrorRates, ...
+    'allRandomSensitivities', allRandomSensitivities, ...
+    'allRandomSpecificities', allRandomSpecificities, ...
+    'allRandomPrecisions', allRandomPrecisions);
 
 end

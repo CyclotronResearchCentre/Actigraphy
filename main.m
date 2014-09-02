@@ -1,23 +1,47 @@
-function [] = main(option)
+function [] = main(option,datafile)
+%
+% FORMAT [] = main(option,datafile)
+%
+% Launches the main analysis
+%
+% INPUT
+% - mode of operation:
+%       . INDIVIDUAL = 1, analysis a series of single files
+%       . COMPARISON = 2, analysis and compares with soem ground truth a 
+%                         series of single file
+%       . GROUP = 3, analysis a series of single files and perform some
+%                    group stats
+% - datafile : list of files to process
+%
+% NOTE: to use the file selection GUI, SPM must be installed and set up
+% (path defintion!)
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
-% constantes;
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
+
 datadir = crc_get_ara_defaults('dir.datadir');
 ara_def = crc_get_ara_defaults('mode');
 
-
 if ~nargin
-    option = spm_input('Action : ',1,'m','Individual|Comparison|Group', ...
-        [ara_def.INDIVIDUAL, ara_def.COMPARISON, ara_def.GROUP],0);
+    button = questdlg('Choose action to perform','Action : ', ...
+                'Individual','Comparison','Group','Individual');
+    switch button
+        case 'Individual', option = ara_def.INDIVIDUAL;
+        case 'Comparison', option = ara_def.COMPARISON;
+        case 'Group', option = ara_def.GROUP;
+    end
 end;
 
 close all;
 
-% origdir = '/home/miguel/Cours/TFE/';
-% datadir = fullfile(origdir, 'Actigraphy_TMS');
-% origdir = crc_get_ara_defaults('dir.datadir');
+% Select the files to be analysed, if needed
+if nargin<2 || isempty(datafile)
+    datafile = spm_select(Inf, '.+\.AWD$', 'Select files ',...
+        [], datadir, '.AWD'); %Show all .AWD files in the directory datadir
+end
 
-% Select the files to be analysed
-datafile = spm_select(Inf, '.+\.AWD$', 'Select files ...', [], datadir, '.AWD'); %Show all .AWD files in the directory datadir
 if(isempty(datafile))
     nbFiles = 0;
 else
