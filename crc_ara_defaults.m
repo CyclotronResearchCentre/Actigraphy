@@ -28,9 +28,9 @@ crc_ara_def.dir.datadir = 'C:\Dropbox\Work\4_Partage\Actigraphy_TMS'; % Director
 crc_ara_def.dir.refdir  = 'C:\Dropbox\Work\4_Partage\Actigraphy_TMS'; % Directory where the reference .xls files are stored
 
 %% Modes for the main function
-crc_ara_def.mode.INDIVIDUAL = 1;
-crc_ara_def.mode.COMPARISON = 2;
-crc_ara_def.mode.GROUP = 3;
+% crc_ara_def.mode.INDIVIDUAL = 1;
+% crc_ara_def.mode.COMPARISON = 2;
+% crc_ara_def.mode.GROUP = 3;
 
 %% Preprocessing
 crc_ara_def.preproc.windowWidth = 80; % expressed in time bins!
@@ -46,7 +46,10 @@ crc_ara_def.sw.ASLEEP = 0;
 crc_ara_def.sw.AWAKE = 1;
 
 %% ACTI constantes
-crc_ara_def.acti.nbSecPerDays = 24*60*60; % 86400;
+crc_ara_def.acti.res_opt = struct( ...
+    'dispActiSW',true, ... % Display SW and ACTI time series
+    'dispSpirSW',true, ... % Display SW on circle
+    'calcExtra',true);     % Estimate extra parameters
 crc_ara_def.acti.sleepToWakeSec = 1800; % in sec (waking up = 30 active minutes activity)
 crc_ara_def.acti.wakeToSleepSec = 1800; % in sec (falling asleep = 30 inactive minutes)
 

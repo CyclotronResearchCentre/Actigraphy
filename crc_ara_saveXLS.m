@@ -1,5 +1,8 @@
-function saveXLS(fileName, wakeDate, sleepDate)
+function crc_ara_saveXLS(fileName, wakeDate, sleepDate)
 %
+% Function to save some results into an .xls file.
+%
+% Update to your liking!
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
@@ -25,6 +28,6 @@ values(1, 2:end) = NaN;
 values(2, :) = str2num(sleepDateStr);
 values(3, :) = str2num(wakeDateStr);
 
-%xlswrite(fileName, values);
+xlswrite(fileName, values);
 
 end

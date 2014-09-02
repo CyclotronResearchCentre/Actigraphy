@@ -1,6 +1,6 @@
-function [ACTI,startTime,t] = preprocessing(ACTI, startTime, t, resolution)
+function [ACTI,startTime,t] = crc_ara_preprocessing(ACTI, startTime, t, resolution)
 %
-% FORMAT [ACTI,startTime,t] = preprocessing(ACTI, startTime, t, resolution)
+% FORMAT [ACTI,startTime,t] = crc_ara_preprocessing(ACTI, startTime, t, resolution)
 %
 % Function to ensure that the actigraphic data start with some 'wake' time,
 %  i.e. some activity. 
@@ -11,7 +11,6 @@ function [ACTI,startTime,t] = preprocessing(ACTI, startTime, t, resolution)
 
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
-
 
 
 ara_def = crc_ara_get_defaults('preproc');
@@ -26,6 +25,5 @@ end
 ACTI = ACTI(index+windowWidth:end);
 t = t(index+windowWidth:end);
 startTime = startTime + (index + windowWidth - 1) * datenum(0, 0, 0, 0, 0, resolution);
-
 
 end

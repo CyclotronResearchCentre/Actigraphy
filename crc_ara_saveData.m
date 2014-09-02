@@ -1,5 +1,8 @@
-function [error] = saveData(fileName, sleepTime, wakeTime, bedTime, upTime, assumedSleepTime, actualSleepTime, actualSleep, actualWakeTime, actualWake, sleepDuration, meanDuration, stdDev)
+function [error] = crc_ara_saveData(fileName, sleepTime, wakeTime, bedTime, upTime, assumedSleepTime, actualSleepTime, actualSleep, actualWakeTime, actualWake, sleepDuration, meanDuration, stdDev)
 %
+% Function to save some results into a text file.
+% 
+% Update to your liking according to what to you want to save!
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 

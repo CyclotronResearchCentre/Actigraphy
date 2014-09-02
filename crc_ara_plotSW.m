@@ -1,6 +1,6 @@
-function plotSW(fileName, ACTI, SW, resolution, t, trueSW)
+function crc_ara_plotSW(fileName, ACTI, SW, resolution, t, trueSW)
 %
-% FORMAT plotSW(fileName, ACTI, SW, trueSW, resolution, t)
+% FORMAT crc_ara_plotSW(fileName, ACTI, SW, trueSW, resolution, t)
 %
 % Plot the raw actigraphic data and the sleep/wake cycles.
 %
@@ -26,12 +26,6 @@ else
     nbPlots = 4;
 end;
 
-% modelFunction = @(params, r) params(1) * sin(params(2) * r + params(3));
-% paramInit = [1 0.005 0];
-% r = 1:length(ACTI);
-% 
-% functionParams = nlinfit(r, SW, modelFunction, paramInit);
-
 % ! PLOTS THE RAW ACTIGRAPHIC DATA AND SW AND BED/UP TIMES !
 
 xValues = 1:3*3600/resolution:length(t); % 1 value every 3h
@@ -40,8 +34,6 @@ yValues = 0:500:tmp;
 
 figure('name', fileName);
 ax(1) = subplot(nbPlots, 1, 1);
-% set(gcf,'Position', [30 50 1200 650]);
-% clf;
 hold on;
 
 % Plot Raw data
@@ -49,7 +41,8 @@ plot(ACTI, 'm');
 title(strcat('Raw data'));
 xlabel('Time');
 set(gca, 'XTick', xValues);
-set(gca, 'XTickLabel', datestr(t(xValues), 15), 'FontSize', 6); %Display the time in 'HH:MM' format for every 'a' displayed
+set(gca, 'XTickLabel', datestr(t(xValues), 15), 'FontSize', 6); 
+% Display the time in 'HH:MM' format for every 'a' displayed
 set(gca, 'YTick', yValues);
 
 
@@ -57,7 +50,6 @@ set(gca, 'YTick', yValues);
 ax(2) = subplot(nbPlots, 1, 2);
 bar(SW);
 hold on;
-% sinusoid = modelFunction(functionParams, r) + functionParams(1);
 % plot(sinusoid / max(sinusoid), 'r');
 hold off;
 title('Estimated sleep-wake');
@@ -75,7 +67,6 @@ if nbPlots == 4
     set(gca,'XTick', xValues);
     set(gca,'XTickLabel', datestr(t(xValues),15), 'FontSize', 6);
     set(gca, 'YTick', [0 1]);
-
 
     ax(4) = subplot(nbPlots, 1, 4);
     diff = SW ~= trueSW;

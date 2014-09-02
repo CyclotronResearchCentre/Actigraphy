@@ -1,5 +1,8 @@
-function [upTime] = getUpTime(ACTI, wakeTime, startTime, nbDataPerDays)
+function [upTime] = crc_ara_getUpTime(ACTI, wakeTime, startTime, nbDataPerDays)
 %
+% FORMAT [upTime] = crc_ara_getUpTime(ACTI, wakeTime, startTime, nbDataPerDays)
+% 
+% Roughly find the up time following the wake time
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
@@ -8,6 +11,7 @@ function [upTime] = getUpTime(ACTI, wakeTime, startTime, nbDataPerDays)
 
 wakeTime = (wakeTime - startTime) * nbDataPerDays;
 factor = 1.8;
+upTime = zeros(1,numel(wakeTime));
 
 for i = 1:length(wakeTime)
     index = wakeTime(i);
