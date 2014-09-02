@@ -15,135 +15,109 @@ function plotCircle(SW, startTime, nbDataPerDays, trueSW)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-% constantes
+%% Define key stuff
 if nargin < 4, trueSW = []; end
-ara_def = crc_get_ara_defaults('sw');
 
 radius = 1;
-colors = ['b', 'r']; %BLUE = sleep, RED = wake
+colors = ['b', 'r']; % BLUE = sleep, RED = wake
 ang = getStartAngle(startTime);
 angStep = 2 * pi / nbDataPerDays; % theta between two successives points on the circle
+radStep = 1/nbDataPerDays;
 origin = [0, 0]; % Center of the circle
+strline = '--------------------------';
 
+nbDays = ceil(numel(SW)/nbDataPerDays);
+angCoord = ang:-angStep:-(2*pi*nbDays+ang);
+radCoord = radius:radStep:(radius+nbDays);
+
+% find W->S/S->W transitions
+dSW = diff(SW);
+l_W2St = find(dSW==-1);
+l_S2Wt = find(dSW==1);
+l_SWt = find(dSW);
+l_SWt_e = [ [1 l_SWt+1] ; [l_SWt numel(SW)] ];
+if ~isempty(trueSW)
+    dtrueSW = diff(trueSW);
+    ltrue_W2St = find(dtrueSW==-1);
+    ltrue_S2Wt = find(dtrueSW==1);
+    ltrue_SWt = find(dtrueSW);
+end
+
+%% Start plot
 figure;
 hold on;
 axis equal;
-% 
-% %Plot an horizontal line
-% plot(linspace(0, 0, 20001), -100:0.01:100, 'k');
-% 
-% %Plot a vertical line
-% plot(-100:0.01:100, linspace(0, 0, 20001), 'k');
+axis([-nbDays-1 nbDays+1 -nbDays-1 nbDays+1])
 
-sleepCoordinates = [0; 0]; %Coordinates of the transitions Wake -> Sleep
-wakeCoordinates = [0; 0]; %Coordinates of the transitions Sleep -> Wake
-state = SW(1);
+% Plot SW cycles on a spiral
+for ii=1:size(l_SWt_e,2)
+    SWt_rad = radCoord(l_SWt_e(1,ii):l_SWt_e(2,ii));
+    SWt_ang = angCoord(l_SWt_e(1,ii):l_SWt_e(2,ii));
+    drawCircle(origin,SWt_rad,SWt_ang,colors(SW(l_SWt_e(1,ii))+1))
+end
 
+% Add circles on transitions
+SWt_ang = angCoord(l_SWt);
+SWt_rad = radCoord(l_SWt);
+drawCircle(origin,SWt_rad,SWt_ang,'ko')
 if ~isempty(trueSW)
-    trueSleepCoordinates = [];
-    trueWakeCoordinates = [];
-    trueState = trueSW(1);
-end;
+    trueSWt_ang = angCoord(ltrue_SWt);
+    trueSWt_rad = radCoord(ltrue_SWt);
+    drawCircle(origin,trueSWt_rad,trueSWt_ang,'go')
+end
 
-for i = 1:length(SW)
-    % End of day i = beginning of day i+1
-    if ang <= - 3 * pi / 2
-        ang = pi / 2;
-    end;
-    
-    circle(origin(1), origin(2), radius, ang, colors(SW(i) + 1));
-    
-    % A ring is put at every transition (Sleep -> Wake or Wake
-    % -> Sleep)
-    if (SW(i) ~= state)
-        [x y] = drawRing(origin(1), origin(2), radius, ang, 'k');
-        if (SW(i) == ara_def.ASLEEP)
-            sleepCoordinates = [sleepCoordinates [x; y]];
-        else
-            wakeCoordinates = [wakeCoordinates [x; y]];
-        end;
-    end;
-    
-    if ~isempty(trueSW)
-        %The same is done with the trueSW
-        if (trueSW(i) ~= trueState)
-            [x y] = drawRing(origin(1), origin(2), radius, ang, 'g');
-            if (trueSW(i) == ara_def.ASLEEP)
-                trueSleepCoordinates = [trueSleepCoordinates [x; y]];
-            else
-                trueWakeCoordinates = [trueWakeCoordinates [x; y]];
-            end;
-        end;
-        
-        trueState = trueSW(i);
-    end;
-    
-    state = SW(i);
-    ang = ang - angStep;
-    radius = radius + 0.01;
-end;
-
-plot(-radius-10:0.1:radius+10, -radius-10:0.1:radius+10, 'w'); 
-% Useless plot to increase the window size ( yeah, it's not beautiful )
-
-%Plot a line that fits the sleep times
-x_max = max(sleepCoordinates(1, :));
-x_min = min(sleepCoordinates(1, :));
-
-x_mean = mean(sleepCoordinates(1, :));
-y_mean = mean(sleepCoordinates(2, :));
-
-sleepSlope = y_mean / x_mean;
-
-p(1) = plot(0:0.1:x_max, sleepSlope .* (0:0.1:x_max), 'k');
-
-%Plot a line that fits the up times
-x_max = max(wakeCoordinates(1, :));
-x_min = min(wakeCoordinates(1, :));
-
-x_mean = mean(wakeCoordinates(1, :));
-y_mean = mean(wakeCoordinates(2, :));
-
-wakeSlope = y_mean / x_mean;
-
-plot(0:0.1:x_max, wakeSlope .* (0:0.1:x_max), 'k');
-
+%% Get mean S/W angles and plot fitted line + standard deviation
+angWake  = angCoord(l_S2Wt); %#ok<*FNDSB>
+% Avoid angle wrapping issues with 2 calculations:
+v1 = mod(angWake,-2*pi);
+v2 = mod(angWake-pi/2,-2*pi)+pi/2;
+if std(v1)>std(v2), angWake = v2; else angWake = v1; end
+m_angWake = mean(angWake); s_angWake = std(angWake);
+drawCircle(origin,[0 nbDays+1],[m_angWake m_angWake],'k')
+drawCircle(origin,[0 nbDays+1],[m_angWake+s_angWake m_angWake+s_angWake],'--k')
+drawCircle(origin,[0 nbDays+1],[m_angWake-s_angWake m_angWake-s_angWake],'--k')
 if ~isempty(trueSW)
-    % Plot a line that fits the true sleep times
-    x_max = max(trueSleepCoordinates(1, :));
-    x_min = min(trueSleepCoordinates(1, :));
-    
-    x_mean = mean(trueSleepCoordinates(1, :));
-    y_mean = mean(trueSleepCoordinates(2, :));
-    
-    trueSleepSlope = y_mean / x_mean;
-    
-    p(2) = plot(0:0.1:x_max, trueSleepSlope .* (0:0.1:x_max), 'g');
-    
-    %Plot a line that fits the true up times
-    x_max = max(trueWakeCoordinates(1, :));
-    x_min = min(trueWakeCoordinates(1, :));
-    
-    x_mean = mean(trueWakeCoordinates(1, :));
-    y_mean = mean(trueWakeCoordinates(2, :));
-    
-    trueWakeSlope = y_mean / x_mean;
-    
-    plot(x_min:0.1:x_max, trueWakeSlope .* (x_min:0.1:x_max), 'g');
-    
-    legend(p, 'Estimated times', 'True times');
-    
-    sleepAngleTime = getAngle(sleepSlope, trueSleepSlope);
-    wakeAngleTime = getAngle(wakeSlope, trueWakeSlope);    
-    fprintf('Sleep Angle (minutes) : %f \n', sleepAngleTime);
-    fprintf('Wake Angle (minutes) : %f \n\n', wakeAngleTime);
-end;
+    angtrueWake  = angCoord(ltrue_S2Wt); %#ok<*FNDSB>
+    % Avoid angle wrapping issues with 2 calculations:
+    v1 = mod(angtrueWake,-2*pi);
+    v2 = mod(angtrueWake-pi/2,-2*pi)+pi/2;
+    if std(v1)>std(v2), angtrueWake = v2; else angtrueWake = v1; end
+    m_angtrueWake = mean(angtrueWake); 
+    drawCircle(origin,[0 nbDays+1],[m_angtrueWake m_angtrueWake],'g')
+end
 
-% Add some text informations
-text(-9, radius, 'Midnight');
-text(radius, 0, '6AM');
-text(-7, -radius, 'Noon');
-text(-radius-20, 0, '6PM');
+angSleep = angCoord(l_W2St);
+% Avoid angle wrapping issues with 2 calculations:
+v1 = mod(angSleep,-2*pi);
+v2 = mod(angSleep-pi/2,-2*pi)+pi/2;
+if std(v1)>std(v2), angSleep = v2; else angSleep = v1; end
+m_angSleep = mean(angSleep); s_angSleep = std(angSleep);
+drawCircle(origin,[0 nbDays+1],[m_angSleep m_angSleep],'k')
+drawCircle(origin,[0 nbDays+1],[m_angSleep+s_angSleep m_angSleep+s_angSleep],'--k')
+drawCircle(origin,[0 nbDays+1],[m_angSleep-s_angSleep m_angSleep-s_angSleep],'--k')
+if ~isempty(trueSW)
+    angtrueSleep = angCoord(ltrue_W2St);
+    % Avoid angle wrapping issues with 2 calculations:
+    v1 = mod(angtrueSleep,-2*pi);
+    v2 = mod(angtrueSleep-pi/2,-2*pi)+pi/2;
+    if std(v1)>std(v2), angtrueSleep = v2; else angtrueSleep = v1; end
+    m_angSleep = mean(angtrueSleep); 
+    drawCircle(origin,[0 nbDays+1],[m_angtrueSleep m_angtrueSleep],'k')
+end
+
+%% Output mean w/s times
+t_wake = -m_angWake/2/pi*24+6;
+fprintf('%s \n', strline);
+fprintf('Mean wake time : %dh %dm\n',fix(t_wake),round((t_wake-fix(t_wake))*60))
+t_slep = -m_angSleep/2/pi*24+6;
+fprintf('Mean sleep time: %dh %dm\n',fix(t_slep),round((t_slep-fix(t_slep))*60))
+fprintf('%s \n\n', strline);
+
+%% Add some text informations
+text(0, nbDays+1.5, 'Midnight');
+text(nbDays+1.5, 0, '6AM');
+text(0, -(nbDays+1.5), 'Noon');
+text(-(nbDays+1.5), 0, '6PM');
 
 axis off
 

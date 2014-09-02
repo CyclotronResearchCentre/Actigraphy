@@ -1,5 +1,10 @@
 function allSleep(option)
+%
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
 
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 constantes;
 
 close all;
