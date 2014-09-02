@@ -1,6 +1,6 @@
-function [SW, x, xf, y1] = crespoPreprocessing(ACTI, resolution)
+function [SW, x, xf, y1] = crc_ara_crespoPreprocessing(ACTI, resolution)
 %
-% FORMAT [SW, x, xf, y1] = crespoPreprocessing(ACTI, resolution)
+% FORMAT [SW, x, xf, y1] = crc_ara_crespoPreprocessing(ACTI, resolution)
 %
 % Performs the 'Crespo' analysis.
 %
@@ -19,19 +19,18 @@ function [SW, x, xf, y1] = crespoPreprocessing(ACTI, resolution)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-ara_def = crc_get_ara_defaults('crespo');
+ara_def = crc_ara_get_defaults('crespo');
+winAlpha = ara_def.winAlpha;
+percentile = ara_def.percentile;
 % z = ara_def.a;
 % za = ara_def.za;
 % zr = ara_def.zr;
-winAlpha = ara_def.winAlpha;
 % Lp = ara_def.Lp;
 % Lw = ara_def.Lw;
 % hs = ara_def.hs;
-percentile = ara_def.percentile;
 
-ASLEEP = crc_get_ara_defaults('acti.ASLEEP');
-AWAKE = crc_get_ara_defaults('acti.AWAKE');
-
+ASLEEP = crc_ara_get_defaults('acti.ASLEEP');
+AWAKE = crc_ara_get_defaults('acti.AWAKE');
 
 % Should be done for the true Crespo preprocessing but is useless due to our
 % own "pre-preprocessing" done in individual.m

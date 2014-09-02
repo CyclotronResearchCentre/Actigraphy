@@ -1,6 +1,6 @@
-function [SW] = learning(ACTI, SW, resolution)
+function [SW] = crc_ara_learning(ACTI, SW, resolution)
 %
-% FORMAT [SW] = learning(ACTI, SW, resolution)
+% FORMAT [SW] = crc_ara_learning(ACTI, SW, resolution)
 %
 % Refines previous solution using machine learning techniques
 % 
@@ -14,7 +14,6 @@ function [SW] = learning(ACTI, SW, resolution)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-% constantes;
 ASLEEP = crc_ara_get_defaults('acti.ASLEEP');
 AWAKE = crc_ara_get_defaults('acti.AWAKE');
 
@@ -49,7 +48,7 @@ for i = 1:length(transitions)
         index = transitions(i);
     end;
 end;
-wake{b} = ACTI(index:end);
+wake{b} = ACTI(index:end); %#ok<*NASGU>
 
 %% Divide SW into subwindows and extract interesting features
 
@@ -74,24 +73,6 @@ while i < length(SW) - windowLength - 60
     end;
     i = i + windowLength;
 end;
-
-% rhos = [];
-% for i = 1:size(features, 2)-1
-%     feature1 = features(:, i);
-%     feature2 = features(:, end);
-%     
-%     [rho pval] = corr(feature1, feature2);
-%     rhos = [rhos; rho];
-% end;
-%rhos
-
-% for i = 1:size(features, 1)
-%     if features(i, end) == 0
-%         y{i} = 'ASLEEP';
-%     else
-%         y{i} = 'AWAKE';
-%     end;
-% end;
 
 % Training is done on the features
 inp = features(:, 1:end-1);

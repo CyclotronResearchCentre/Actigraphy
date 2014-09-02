@@ -29,8 +29,8 @@ function [stat_res] = individual(datafile, nbFiles, mode, displayPlot)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-nbSecPerDays = crc_get_ara_defaults('acti.nbSecPerDays');
-ara_def = crc_get_ara_defaults('mode');
+nbSecPerDays = 24*60*60;
+ara_def = crc_ara_get_defaults('mode');
 
 for ifile = 1:nbFiles
     

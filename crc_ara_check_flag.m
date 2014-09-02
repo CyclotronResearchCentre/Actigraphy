@@ -1,6 +1,6 @@
-function flags = crc_check_flag(flags_o,flags)
+function flags = crc_ara_check_flag(flags_o,flags)
 
-% FORMAT flags = crc_check_flag(flags_o,flags)
+% FORMAT flags = crc_ara_check_flag(flags_o,flags)
 %
 % Function to automatically check the content of a "flag" structure, using
 % a "default flag structure", adding the missing fields and putting in the 
@@ -18,7 +18,6 @@ function flags = crc_check_flag(flags_o,flags)
 
 % Written by Y. Leclercq & C. Phillips, 2008.
 % Cyclotron Research Centre, University of Liege, Belgium
-% $Id$
 
 f_names = fieldnames(flags_o);
 % list fields in default structure

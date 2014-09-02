@@ -1,6 +1,6 @@
-function drawCircle(xyCenter, r, ang, color_opt)
+function crc_ara_drawCircle(xyCenter, r, ang, color_opt)
 %
-% FORMAT drawCircle(xyCenter, r, ang, color)
+% FORMAT crc_ara_drawCircle(xyCenter, r, ang, color)
 %
 % Plot lines in polar coordinates around a centre
 %
