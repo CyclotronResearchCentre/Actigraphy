@@ -21,8 +21,8 @@ function [] = main(option,datafile)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-datadir = crc_get_ara_defaults('dir.datadir');
-ara_def = crc_get_ara_defaults('mode');
+datadir = crc_ara_get_defaults('dir.datadir');
+ara_def = crc_ara_get_defaults('mode');
 
 if ~nargin
     button = questdlg('Choose action to perform','Action : ', ...

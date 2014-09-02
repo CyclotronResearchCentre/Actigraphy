@@ -46,7 +46,6 @@ crc_ara_def.sw.ASLEEP = 0;
 crc_ara_def.sw.AWAKE = 1;
 
 %% ACTI constantes
-crc_ara_def.acti.strline = '--------------------------';
 crc_ara_def.acti.nbSecPerDays = 24*60*60; % 86400;
 crc_ara_def.acti.sleepToWakeSec = 1800; % in sec (waking up = 30 active minutes activity)
 crc_ara_def.acti.wakeToSleepSec = 1800; % in sec (falling asleep = 30 inactive minutes)

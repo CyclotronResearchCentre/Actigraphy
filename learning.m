@@ -15,8 +15,8 @@ function [SW] = learning(ACTI, SW, resolution)
 % Cyclotron Research Centre, University of Liege, Belgium
 
 % constantes;
-ASLEEP = crc_get_ara_defaults('acti.ASLEEP');
-AWAKE = crc_get_ara_defaults('acti.AWAKE');
+ASLEEP = crc_ara_get_defaults('acti.ASLEEP');
+AWAKE = crc_ara_get_defaults('acti.AWAKE');
 
 transitions = find(abs(diff(SW))==1);
 sleepIndex = [];

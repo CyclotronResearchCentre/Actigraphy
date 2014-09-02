@@ -14,7 +14,7 @@ function [ACTI,startTime,t] = preprocessing(ACTI, startTime, t, resolution)
 
 
 
-ara_def = crc_get_ara_defaults('preproc');
+ara_def = crc_ara_get_defaults('preproc');
 windowWidth = ara_def.windowWidth ;
 threshold = ara_def.threshold ;
 

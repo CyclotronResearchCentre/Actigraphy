@@ -19,6 +19,7 @@ function group(datafile, nbFiles)
 % Cyclotron Research Centre, University of Liege, Belgium
 
 % constantes;
+strline = '--------------------------';
 
 errorRates = zeros(1, nbFiles);
 sensitivities = zeros(1, nbFiles);

@@ -7,6 +7,7 @@ function allRandom(option)
 % Cyclotron Research Centre, University of Liege, Belgium
 
 constantes;
+strline = '--------------------------';
 
 close all;
 
@@ -24,17 +25,16 @@ end;
 errorRates = zeros(1, nbFiles);
 
 for ifile = 1:nbFiles
-    trueSW = [];
     
     %Get raw data from the file    
     file = datafile(ifile, :);
-    [fileName ACTI nbDays sleepToWake wakeToSleep resolution startTime t] = getData(file);
+    [fileName, ACTI, nbDays, sleepToWake, wakeToSleep, resolution, startTime, t] = getData(file); %#ok<*ASGLU>
     nbDataPerDays = nbSecPerDays / resolution;
-    [trueSW trueBedDate trueUpDate trueSleepDate trueWakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays);
+    [trueSW, trueBedDate, trueUpDate, trueSleepDate, trueWakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays);
     
     %Sometime, all the nights weren't scored manually, so they need
     %to be removed from ACTI and trueSW
-    [ACTI trueSW startTime t] = modifyLength(ACTI, trueSW, startTime, t, resolution);
+    [ACTI, trueSW, startTime, t] = modifyLength(ACTI, trueSW, startTime, t, resolution);
     
     SW = rand(1, length(ACTI)); %All minutes = ASLEEP
     SW(SW>0.5) = 1;

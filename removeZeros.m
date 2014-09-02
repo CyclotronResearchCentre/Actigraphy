@@ -12,7 +12,7 @@ function ACTI = removeZeros(ACTI)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-ara_def = crc_get_ara_defaults('rmzeros');
+ara_def = crc_ara_get_defaults('rmzeros');
 thresh = ara_def.thresh ;
 dur = ara_def.dur ;
 dur_fill = ara_def.dur_fill ;

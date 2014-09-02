@@ -7,6 +7,7 @@ function [errorRate, sensitivity, specificity, kappa, meanWakeError, stdWakeErro
 % Cyclotron Research Centre, University of Liege, Belgium
 
 constantes;
+strline = '--------------------------';
 
 %% Initialize the output variables
 errorRate = -1;

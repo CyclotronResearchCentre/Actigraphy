@@ -15,7 +15,7 @@ function displayResults(errorRates, sensitivities, specificities)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-strline = crc_get_ara_defaults('acti.strline');
+strline = '--------------------------';
 
 fprintf('%s \n', strline);
 fprintf('Mean error : %f \n', 1 - mean(errorRates));

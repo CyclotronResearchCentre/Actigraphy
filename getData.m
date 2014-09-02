@@ -16,9 +16,9 @@ function [fileName, ACTI, nbDays, resolution, startTime, t] = getData(file)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-ara_def = crc_get_ara_defaults('acti');
+ara_def = crc_ara_get_defaults('acti');
 nbSecPerDays = ara_def.nbSecPerDays;
-strline = ara_def.strline;
+strline = '--------------------------';
 
 % Opening and reading of the file
 [fileName, ACTI, resolution, startTime, nbDays] = readFile(file); %#ok<*NASGU>

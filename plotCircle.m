@@ -72,7 +72,7 @@ angWake  = angCoord(l_S2Wt); %#ok<*FNDSB>
 v1 = mod(angWake,-2*pi);
 v2 = mod(angWake-pi/2,-2*pi)+pi/2;
 if std(v1)>std(v2), angWake = v2; else angWake = v1; end
-m_angWake = mean(angWake); s_angWake = std(angWake);
+m_angWake = median(angWake); s_angWake = std(angWake);
 drawCircle(origin,[0 nbDays+1],[m_angWake m_angWake],'k')
 drawCircle(origin,[0 nbDays+1],[m_angWake+s_angWake m_angWake+s_angWake],'--k')
 drawCircle(origin,[0 nbDays+1],[m_angWake-s_angWake m_angWake-s_angWake],'--k')
@@ -82,7 +82,7 @@ if ~isempty(trueSW)
     v1 = mod(angtrueWake,-2*pi);
     v2 = mod(angtrueWake-pi/2,-2*pi)+pi/2;
     if std(v1)>std(v2), angtrueWake = v2; else angtrueWake = v1; end
-    m_angtrueWake = mean(angtrueWake); 
+    m_angtrueWake = median(angtrueWake); 
     drawCircle(origin,[0 nbDays+1],[m_angtrueWake m_angtrueWake],'g')
 end
 
@@ -91,7 +91,7 @@ angSleep = angCoord(l_W2St);
 v1 = mod(angSleep,-2*pi);
 v2 = mod(angSleep-pi/2,-2*pi)+pi/2;
 if std(v1)>std(v2), angSleep = v2; else angSleep = v1; end
-m_angSleep = mean(angSleep); s_angSleep = std(angSleep);
+m_angSleep = median(angSleep); s_angSleep = std(angSleep);
 drawCircle(origin,[0 nbDays+1],[m_angSleep m_angSleep],'k')
 drawCircle(origin,[0 nbDays+1],[m_angSleep+s_angSleep m_angSleep+s_angSleep],'--k')
 drawCircle(origin,[0 nbDays+1],[m_angSleep-s_angSleep m_angSleep-s_angSleep],'--k')
@@ -101,16 +101,16 @@ if ~isempty(trueSW)
     v1 = mod(angtrueSleep,-2*pi);
     v2 = mod(angtrueSleep-pi/2,-2*pi)+pi/2;
     if std(v1)>std(v2), angtrueSleep = v2; else angtrueSleep = v1; end
-    m_angSleep = mean(angtrueSleep); 
+    m_angSleep = median(angtrueSleep); 
     drawCircle(origin,[0 nbDays+1],[m_angtrueSleep m_angtrueSleep],'k')
 end
 
 %% Output mean w/s times
 t_wake = -m_angWake/2/pi*24+6;
 fprintf('%s \n', strline);
-fprintf('Mean wake time : %dh %dm\n',fix(t_wake),round((t_wake-fix(t_wake))*60))
+fprintf('Median wake time : %dh %dm\n',fix(t_wake),round((t_wake-fix(t_wake))*60))
 t_slep = -m_angSleep/2/pi*24+6;
-fprintf('Mean sleep time: %dh %dm\n',fix(t_slep),round((t_slep-fix(t_slep))*60))
+fprintf('Median sleep time: %dh %dm\n',fix(t_slep),round((t_slep-fix(t_slep))*60))
 fprintf('%s \n\n', strline);
 
 %% Add some text informations
