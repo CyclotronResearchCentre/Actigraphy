@@ -10,8 +10,8 @@ function [sleepTime, wakeTime] = getNights(SW, time, nbDataPerDays)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-ASLEEP = crc_get_ara_defaults('acti.ASLEEP');
-AWAKE = crc_get_ara_defaults('acti.AWAKE');
+ASLEEP = crc_ara_get_defaults('acti.ASLEEP');
+AWAKE = crc_ara_get_defaults('acti.AWAKE');
 
 transitions = abs(diff(SW));
 state = SW(1);

@@ -1,14 +1,14 @@
-function varargout = crc_get_ara_defaults(defstr, varargin)
+function varargout = crc_ara_get_defaults(defstr, varargin)
 % Get/set the defaults values associated with an identifier
-% FORMAT defaults = crc_get_ara_defaults
+% FORMAT defaults = crc_ara_get_defaults
 % Return the global "defaults" variable defined in crc_ara_defaults.m.
 %
-% FORMAT defval = crc_get_ara_defaults(defstr)
+% FORMAT defval = crc_ara_get_defaults(defstr)
 % Return the defaults value associated with identifier "defstr". 
 % Currently, this is a '.' subscript reference into the global  
 % "crc_ara_def" variable defined in crc_ara_defaults.m.
 %
-% FORMAT crc_get_defaults(defstr, defval)
+% FORMAT crc_ara_get_defaults(defstr, defval)
 % Sets the defaults value associated with identifier "defstr". The new
 % defaults value applies immediately to:
 % * new modules in batch jobs

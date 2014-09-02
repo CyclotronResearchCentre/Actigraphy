@@ -1,4 +1,4 @@
-function [trueSW bedDate upDate sleepDate wakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays)
+function [trueSW, bedDate, upDate, sleepDate, wakeDate] = getTrueValues(fileName, ACTI, startTime, nbDataPerDays)
 %
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
@@ -9,7 +9,7 @@ function [trueSW bedDate upDate sleepDate wakeDate] = getTrueValues(fileName, AC
 constantes;
 
 %Reads the XLS file related to the manual scoring and retrieves the data
-[bedDate upDate sleepDate wakeDate] = readXLS(fileName);
+[bedDate, upDate, sleepDate, wakeDate] = readXLS(fileName);
 
 trueSW = zeros(1, length(ACTI)); %Sleep-Wake scored by hand
 state = AWAKE;
