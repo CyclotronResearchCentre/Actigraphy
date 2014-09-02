@@ -1,4 +1,10 @@
 function [bedTime] = getBedTime(ACTI, sleepTime, startTime, nbDataPerDays)
+%
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
+
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
 sleepTime = (sleepTime - startTime) * nbDataPerDays;
 factor = 1.8;

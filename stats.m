@@ -1,4 +1,10 @@
 function [errorRate, sensitivity, specificity, kappa, meanWakeError, stdWakeError, meanSleepError, stdSleepError] = stats(SW, wakeDate, sleepDate, sleepDuration, trueSW, trueWakeDate, trueSleepDate, displayPlot)
+%
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
+
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
 constantes;
 

@@ -1,4 +1,10 @@
 function [bedDate upDate sleepDate wakeDate] = readXLS(fileName)
+%
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
+
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
 fileName = strcat('XLS/', fileName, '_sleep analysis.xls');
 %Warnings are set off because xlsread shows a useless warning message

@@ -1,4 +1,10 @@
 function plotPreprocessing(fileName, ACTI, SW, x, xf, y1, resolution, t)
+%
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
+
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
 constantes;
 

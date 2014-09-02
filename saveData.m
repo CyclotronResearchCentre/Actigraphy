@@ -1,7 +1,13 @@
 function [error] = saveData(fileName, sleepTime, wakeTime, bedTime, upTime, assumedSleepTime, actualSleepTime, actualSleep, actualWakeTime, actualWake, sleepDuration, meanDuration, stdDev)
+%
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
+
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
 error = 0;
-fileName = [fileName ' - Extracted data'];
+fileName = [fileName '_ExtractedData'];
 file = fopen(fileName, 'w');
 
 for i = 1:length(sleepTime)

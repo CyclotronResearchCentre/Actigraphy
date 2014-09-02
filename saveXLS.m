@@ -1,4 +1,10 @@
 function saveXLS(fileName, wakeDate, sleepDate)
+%
+%_______________________________________________________________________
+% Copyright (C) 2014 Cyclotron Research Centre
+
+% Written by M. Gonzalez Y Viagas & C. Phillips, 2014
+% Cyclotron Research Centre, University of Liege, Belgium
 
 if str2num(datestr(sleepDate(1), 'HH')) < 12
     day = datenum(0, 0, 1, 0, 0, 0);
