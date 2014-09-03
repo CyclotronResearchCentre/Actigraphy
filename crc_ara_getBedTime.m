@@ -16,7 +16,7 @@ function [bedTime] = crc_ara_getBedTime(ACTI, sleepTime, startTime, nbDataPerDay
 % Cyclotron Research Centre, University of Liege, Belgium
 
 sleepTime = (sleepTime - startTime) * nbDataPerDays;
-factor = 1.8;
+factor = crc_ara_get_defaults('but.factor');
 bedTime = zeros(1,numel(sleepTime));
 
 for i = 1:length(sleepTime)

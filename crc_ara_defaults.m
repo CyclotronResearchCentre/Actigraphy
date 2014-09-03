@@ -43,14 +43,14 @@ crc_ara_def.rmzeros.dur_fill = 30; % filling duration (in time bins!)
 
 %% Sleep/Wake values
 crc_ara_def.sw.ASLEEP = 0;
-crc_ara_def.sw.AWAKE = 1;
+crc_ara_def.sw.AWAKE  = 1;
 
 %% ACTI constantes
-crc_ara_def.acti.res_opt = struct( ...
-    'dispActiSW',true, ... % Display SW and ACTI time series
-    'dispSpirSW',true, ... % Display SW on circle
-    'dispSpirAC',true, ... % Display ACTI data on circle
-    'calcExtra',true);     % Estimate extra parameters
+crc_ara_def.acti.res_opt.dispActiSW = true; % Display SW and ACTI time series
+crc_ara_def.acti.res_opt.dispSpirSW = true; % Display SW on circle
+crc_ara_def.acti.res_opt.dispSpirAC = true; % Display ACTI data on circle
+crc_ara_def.acti.res_opt.calcExtra  = true; % Estimate extra parameters
+crc_ara_def.acti.res_opt.saveRes    = false;% Save the results for each data file
 crc_ara_def.acti.sleepToWakeSec = 1800; % in sec (waking up = 30 active minutes activity)
 crc_ara_def.acti.wakeToSleepSec = 1800; % in sec (falling asleep = 30 inactive minutes)
 
@@ -63,6 +63,9 @@ crc_ara_def.crespo.Lp = 60 + 1;
 crc_ara_def.crespo.Lw = 150;
 crc_ara_def.crespo.hs = 8;
 crc_ara_def.crespo.percentile = 30;
+
+%% Bed & Up time constantes
+crc_ara_def.but.factor = 1.8;
 
 %% Comparison constantes
 crc_ara_def.comp.ALL_SLEEP = 0;

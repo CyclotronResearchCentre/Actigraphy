@@ -10,7 +10,7 @@ function [upTime] = crc_ara_getUpTime(ACTI, wakeTime, startTime, nbDataPerDays)
 % Cyclotron Research Centre, University of Liege, Belgium
 
 wakeTime = (wakeTime - startTime) * nbDataPerDays;
-factor = 1.8;
+factor = crc_ara_get_defaults('but.factor');
 upTime = zeros(1,numel(wakeTime));
 
 for i = 1:length(wakeTime)
