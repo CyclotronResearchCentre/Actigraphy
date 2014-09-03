@@ -49,6 +49,7 @@ crc_ara_def.sw.AWAKE = 1;
 crc_ara_def.acti.res_opt = struct( ...
     'dispActiSW',true, ... % Display SW and ACTI time series
     'dispSpirSW',true, ... % Display SW on circle
+    'dispSpirAC',true, ... % Display ACTI data on circle
     'calcExtra',true);     % Estimate extra parameters
 crc_ara_def.acti.sleepToWakeSec = 1800; % in sec (waking up = 30 active minutes activity)
 crc_ara_def.acti.wakeToSleepSec = 1800; % in sec (falling asleep = 30 inactive minutes)

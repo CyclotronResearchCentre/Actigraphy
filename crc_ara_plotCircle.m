@@ -1,4 +1,4 @@
-function crc_ara_plotCircle(SW, startTime, nbDataPerDays, trueSW)
+function crc_ara_plotCircle(SW, startTime, nbDataPerDays, ACTI, trueSW)
 %
 % FORMAT crc_ara_plotCircle(SW, trueSW, startTime, nbDataPerDays)
 %
@@ -8,6 +8,7 @@ function crc_ara_plotCircle(SW, startTime, nbDataPerDays, trueSW)
 % - SW            : sleep/wake time series
 % - startTime     : start time of recording
 % - nbDataPerDays : number of bins per day
+% - ACTI          : actigraphic data
 % - trueSW        : true sleep/wake time series, used as reference ([], def)
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
@@ -16,7 +17,8 @@ function crc_ara_plotCircle(SW, startTime, nbDataPerDays, trueSW)
 % Cyclotron Research Centre, University of Liege, Belgium
 
 %% Define key stuff
-if nargin < 4, trueSW = []; end
+if nargin < 5, trueSW = []; end
+if nargin < 4, ACTI = []; end
 
 radius = 1;
 colors = ['b', 'r']; % BLUE = sleep, RED = wake
@@ -49,7 +51,20 @@ hold on;
 axis equal;
 axis([-nbDays-1 nbDays+1 -nbDays-1 nbDays+1])
 
-% Plot SW cycles on a spiral
+%% If provided plot ACTI on top of spiral
+if ~isempty(ACTI) 
+    if numel(ACTI)<numel(angCoord)
+%         ACTI_sc = ACTI/max(ACTI) * 1.5 ;  % Ensures values [0 1.5] fo visibility;
+        ACTI_sc = ACTI/prctile(ACTI,99) ; % Ensures few values >1;
+        ACTI_rad = ACTI_sc + radCoord(1:numel(ACTI));
+        ACTI_ang = angCoord(1:numel(ACTI));
+        crc_ara_drawCircle(origin,ACTI_rad,ACTI_ang,'m');
+    else
+        fprintf('\n Could not plot ACTI data, wrong duration\n')
+    end
+end
+
+%% Plot SW cycles on a spiral
 for ii=1:size(l_SWt_e,2)
     SWt_rad = radCoord(l_SWt_e(1,ii):l_SWt_e(2,ii));
     SWt_ang = angCoord(l_SWt_e(1,ii):l_SWt_e(2,ii));
@@ -64,7 +79,7 @@ for ii=1:size(l_SWt_e,2)
     end
 end
 
-% Add circles on transitions
+%% Add circles on transitions
 SWt_ang = angCoord(l_SWt);
 SWt_rad = radCoord(l_SWt);
 p(3) = crc_ara_drawCircle(origin,SWt_rad,SWt_ang,'ko');
@@ -116,11 +131,11 @@ end
 %% Add median w/s times
 t_wake = -m_angWake/2/pi*24+6;
 xy_t_wake = [cos(m_angWake) sin(m_angWake)]*(line_length+.2);
-text(xy_t_wake(1),xy_t_wake(2),sprintf('%2d:%2d\n', ...
+text(xy_t_wake(1),xy_t_wake(2),sprintf('%02d:%02d\n', ...
         fix(t_wake),round((t_wake-fix(t_wake))*60)))
 t_sleep = -m_angSleep/2/pi*24+6;
 xy_t_sleep = [cos(m_angSleep) sin(m_angSleep)]*(line_length+.2);
-text(xy_t_sleep(1),xy_t_sleep(2),sprintf('%2d:%2d\n', ...
+text(xy_t_sleep(1),xy_t_sleep(2),sprintf('%02d:%02d\n', ...
         fix(t_sleep),round((t_sleep-fix(t_sleep))*60)))
 
 %% Add some text informations
