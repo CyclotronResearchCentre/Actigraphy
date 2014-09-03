@@ -46,7 +46,8 @@ if ~isempty(trueSW)
 end
 
 %% Start plot
-figure;
+hf = figure;
+set(hf,'Position',[500 300 1200 800])
 hold on;
 axis equal;
 axis([-nbDays-1 nbDays+1 -nbDays-1 nbDays+1])
@@ -83,10 +84,12 @@ end
 SWt_ang = angCoord(l_SWt);
 SWt_rad = radCoord(l_SWt);
 p(3) = crc_ara_drawCircle(origin,SWt_rad,SWt_ang,'ko');
+set(p(3),'MarkerSize',10,'LineWidth',2)
 if ~isempty(trueSW)
     trueSWt_ang = angCoord(ltrue_SWt);
     trueSWt_rad = radCoord(ltrue_SWt);
-    p(5) = crc_ara_drawCircle(origin,trueSWt_rad,trueSWt_ang,'go');
+    p(6) = crc_ara_drawCircle(origin,trueSWt_rad,trueSWt_ang,'go');
+    set(p(6),'MarkerSize',10,'LineWidth',2)
 end
 
 %% Get mean S/W angles and plot fitted line + standard deviation
@@ -97,7 +100,7 @@ v2 = mod(angWake-pi/2,-2*pi)+pi/2;
 if std(v1)>std(v2), angWake = v2; else angWake = v1; end
 m_angWake = median(angWake); s_angWake = std(angWake);
 p(4) = crc_ara_drawCircle(origin,[0 line_length],[m_angWake m_angWake],'k');
-crc_ara_drawCircle(origin,[0 line_length],[m_angWake+s_angWake m_angWake+s_angWake],'--k');
+p(5) = crc_ara_drawCircle(origin,[0 line_length],[m_angWake+s_angWake m_angWake+s_angWake],'--k');
 crc_ara_drawCircle(origin,[0 line_length],[m_angWake-s_angWake m_angWake-s_angWake],'--k');
 if ~isempty(trueSW)
     angtrueWake  = angCoord(ltrue_S2Wt); %#ok<*FNDSB>
@@ -106,7 +109,7 @@ if ~isempty(trueSW)
     v2 = mod(angtrueWake-pi/2,-2*pi)+pi/2;
     if std(v1)>std(v2), angtrueWake = v2; else angtrueWake = v1; end
     m_angtrueWake = median(angtrueWake); 
-    p(6) = crc_ara_drawCircle(origin,[0 line_length],[m_angtrueWake m_angtrueWake],'g');
+    p(7) = crc_ara_drawCircle(origin,[0 line_length],[m_angtrueWake m_angtrueWake],'g');
 end
 
 angSleep = angCoord(l_W2St);
@@ -131,11 +134,11 @@ end
 %% Add median w/s times
 t_wake = -m_angWake/2/pi*24+6;
 xy_t_wake = [cos(m_angWake) sin(m_angWake)]*(line_length+.2);
-text(xy_t_wake(1),xy_t_wake(2),sprintf('%02d:%02d\n', ...
+text(xy_t_wake(1),xy_t_wake(2),sprintf('%02d:%02d', ...
         fix(t_wake),round((t_wake-fix(t_wake))*60)))
 t_sleep = -m_angSleep/2/pi*24+6;
 xy_t_sleep = [cos(m_angSleep) sin(m_angSleep)]*(line_length+.2);
-text(xy_t_sleep(1),xy_t_sleep(2),sprintf('%02d:%02d\n', ...
+text(xy_t_sleep(1),xy_t_sleep(2),sprintf('%02d:%02d', ...
         fix(t_sleep),round((t_sleep-fix(t_sleep))*60)))
 
 %% Add some text informations
@@ -152,11 +155,13 @@ axis off
 
 if isempty(trueSW)
     legend(p, 'Sleep time', 'Wake time', 'Transition time', ...
-            'Median transition time', 'Location','Best');
+            'Median transition time', 'Std transition time', ...
+            'Location','BestOutside');
 else
     legend(p, 'Sleep time', 'Wake time', 'Transition time', ...
-            'Median transition time', 'Ref. transition time', ... 
-            'Median ref. transition time', 'Location','Best');    
+            'Median transition time', 'std transition time', ...
+            'Ref. transition time', 'Median ref. transition time', ... 
+            'Location','BestOutside');    
 end
 
 end
