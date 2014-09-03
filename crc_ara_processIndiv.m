@@ -1,25 +1,28 @@
-function [SW,data] = crc_ara_processIndiv(datafile, option)
+function [SW,data,stat_res] = crc_ara_processIndiv(fn_dat, option)
 %
-% FORMAT [stat_res] = crc_ara_processIndiv(datafile, option)
+% FORMAT [SW,data,stat_res] = crc_ara_processIndiv(fn_dat, option)
 %
-% Processes a series of actigraphy files and displaying the results.
-% Possibly comparing each to some true scoring, provided in a separate .xls
-% file in the same directory.
+% Processes a single actigraphy files.
+% Depending on 'option', also displaying the results in 1 or 2 figures and
+% estimating some more parameters
 %
 % INPUT
-% - datafile    : filename of data to process
-% - option structure:
+% - fn_dat : filename of data to process
+% - option : structure with some options. If not provided, use 'defaults'
 %       . dispActiSW : display the actigraphic data and S/W on time plot
-%       . dispSpirSW : display the S/W cycle on a spiral
+%       . dispSpirSW : display the S/W cycle on circle
+%       . dispSpirAC : display ACTI data on circle
+%       . calcExtra  : estimate extra parameters
 %
 % OUTPUT
-% - SW   : Estimated sleep wake cycle
-% - data : a structure containing the data and some other info
+% - SW       : Estimated sleep wake cycle
+% - data     : a structure containing the data and some other info
 %       . ACTI       : actigraphic data
 %       . resolution : temporal resolution
 %       . nbDays     : number of days of recording
 %       . startTime  : start date & time
 %       . t          : time regressor for plot
+% - stat_res : some processed results
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
@@ -34,14 +37,14 @@ option = crc_ara_check_flag(opt_def,option);
 % Select 1 file?
 if nargin<1,
     datadir = crc_ara_get_defaults('dir.datadir');
-    datafile = spm_select(1, '.+\.AWD$', 'Select files ',...
+    fn_dat = spm_select(1, '.+\.AWD$', 'Select files ',...
         [], datadir, '.AWD'); %Show all .AWD files in the directory datadir
 end
 
 nbSecPerDays = 24*60*60;
 
 %% Get Acti data & process
-[fileName, ACTI, nbDays, resolution, startTime, t] = crc_ara_getData(datafile);
+[fileName, ACTI, nbDays, resolution, startTime, t] = crc_ara_getData(fn_dat);
 nbDataPerDays = nbSecPerDays / resolution;
 
 % Sometimes the signal begins "too early" with a lot of 0 values
@@ -84,15 +87,39 @@ if option.calcExtra
     [sleepDate, wakeDate] = crc_ara_getNights(SW, startTime, nbDataPerDays);
     bedDate = crc_ara_getBedTime(ACTI, sleepDate, startTime, nbDataPerDays);
     upDate  = crc_ara_getUpTime(ACTI, wakeDate, startTime, nbDataPerDays);
-    %     assumedSleepDate = upDate - bedDate;
-    %     actualSleepDate = wakeDate - sleepDate;
-    %     actualSleep = actualSleepDate ./ assumedSleepDate;
-    %     actualWakeDate = assumedSleepDate - actualSleepDate;
-    %     actualWake = actualWakeDate ./ assumedSleepDate;
+    % Sleep efficiency
+    assumedSleepDate = upDate - bedDate;
+    actualSleepDate = wakeDate - sleepDate;
+    actualSleepRatio = actualSleepDate ./ assumedSleepDate;
+    actualWakeDate = assumedSleepDate - actualSleepDate;
+    actualWakeRatio = actualWakeDate ./ assumedSleepDate;
+    
     sleepDuration = wakeDate - sleepDate;
     % Computes some more stats
     [stat_res] = crc_ara_sumStats(wakeDate, sleepDate, sleepDuration);
-    
+    % With output
+    % stat_res = struct( ...
+    %     'meanWakeTime', meanWakeTime, ...
+    %     'medianWakeTime', medianWakeTime, ...
+    %     'stdWakeTime', stdWakeTime, ...
+    %     'meanSleepTime', meanSleepTime, ...
+    %     'medianSleepTime', medianSleepTime, ...
+    %     'stdSleepTime', stdSleepTime, ...
+    %     'meanDuration', meanDuration, ...
+    %     'medianDuration', medianDuration, ...
+    %     'stdDuration', stdDuration);
+    daily = struct(...
+        'sleepDate', sleepDate, ...
+        'wakeDate', wakeDate, ...
+        'bedDate', bedDate, ...
+        'assumedSleepDate', assumedSleepDate, ...
+        'actualSleepDate', actualSleepDate, ...
+        'actualSleepRatio', actualSleepRatio, ...
+        'actualWakeDate', actualWakeDate, ...
+        'actualWakeRatio', actualWakeRatio, ...
+        'sleepDuration', sleepDuration ...
+        );
+    stat_res.daily = daily;
 end
 
 end

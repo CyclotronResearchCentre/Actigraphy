@@ -2,6 +2,20 @@ function [stat_res] = crc_ara_sumStats(wakeDate, sleepDate, sleepDuration)
 %
 % Estimate and display some summary statistics about the analyzed
 % actigraphy data.
+% 
+% INPUT
+%
+% OUTPUT
+% stat_res : structure with the following fields
+%  . meanWakeTime      \
+%  . medianWakeTime    -- mean/median/std Wake time
+%  . stdWakeTime       /
+%  . meanSleepTime     \
+%  . medianSleepTime   -- mean/median/std Sleep time
+%  . stdSleepTime      /
+%  . meanDuration      \
+%  . medianDuration    -- mean/median/std Sleep duration
+%  . stdDuration       /
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
@@ -35,8 +49,10 @@ stdSleepTimeStr = datestr(stdSleepTime, 'HH:MM');
 
 % Display, mean, median, std
 fprintf('%s \n', strline);
-fprintf('Wake Time  : median %s, mean %s, std %s \n', medianWakeTimeStr,meanWakeTimeStr,stdWakeTimeStr);
-fprintf('Sleep Time : median %s, mean %s, std %s \n', medianSleepTimeStr,meanSleepTimeStr,stdSleepTimeStr);
+fprintf('Wake Time  : median %s, mean %s, std %s \n', ...
+    medianWakeTimeStr,meanWakeTimeStr,stdWakeTimeStr);
+fprintf('Sleep Time : median %s, mean %s, std %s \n', ...
+    medianSleepTimeStr,meanSleepTimeStr,stdSleepTimeStr);
 fprintf('%s \n', strline);
 % Display estimated times
 wakeTimeStr = datestr(wakeTime, 'HH:MM');
