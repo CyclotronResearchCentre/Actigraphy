@@ -17,7 +17,7 @@ function [bedTime] = crc_ara_getBedTime(ACTI, sleepTime, startTime, nbDataPerDay
 
 sleepTime = (sleepTime - startTime) * nbDataPerDays;
 factor = 1.8;
-bedTime = zeros(1,numel(sleepTime);
+bedTime = zeros(1,numel(sleepTime));
 
 for i = 1:length(sleepTime)
     index = sleepTime(i);

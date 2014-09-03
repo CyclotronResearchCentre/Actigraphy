@@ -1,6 +1,6 @@
-function crc_ara_drawCircle(xyCenter, r, ang, color_opt)
+function p = crc_ara_drawCircle(xyCenter, r, ang, color_opt)
 %
-% FORMAT crc_ara_drawCircle(xyCenter, r, ang, color)
+% FORMAT p = crc_ara_drawCircle(xyCenter, r, ang, color)
 %
 % Plot lines in polar coordinates around a centre
 %
@@ -9,6 +9,9 @@ function crc_ara_drawCircle(xyCenter, r, ang, color_opt)
 % - r         : radius or vector of radii
 % - and       : angle or vector of angles
 % - color_opt : color to use and other plot option
+%
+% OUTPUT
+% - p         : pointer to the plot
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
@@ -18,6 +21,6 @@ function crc_ara_drawCircle(xyCenter, r, ang, color_opt)
 x = xyCenter(1) + r .* cos(ang);
 y = xyCenter(2) + r .* sin(ang);
 
-plot(x, y, color_opt);
+p = plot(x, y, color_opt);
 
 end

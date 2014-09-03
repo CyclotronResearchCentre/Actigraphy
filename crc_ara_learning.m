@@ -77,7 +77,9 @@ end;
 % Training is done on the features
 inp = features(:, 1:end-1);
 out = features(:, end);
+warning('OFF','NNET:Obsolete')
 net = newff([min(inp)' max(inp)'], [30 1], {'tansig' 'purelin'});
+warning('ON','NNET:Obsolete')
 net.trainParam.epochs = 300;
 net.trainParam.showWindow = 0;
 net = train(net, inp', out');
