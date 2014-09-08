@@ -1,3 +1,4 @@
 *.asv
 trav_plot.m
 trav_plot_data.mat
+*.m~

@@ -76,15 +76,31 @@ function comp_indiv(datafile, nbFiles)
 for ii=1:nbFiles
     fn_ii = deblank(datafile(ii,:));
 
-    %Retrieves the values from the manual scoring
-    [trueSW, trueBedDate, trueUpDate, trueSleepDate, trueWakeDate] = getTrueValues(fn_ii, ACTI, startTime, nbDataPerDays);
-        
-    %Sometime, all the nights weren't scored manually, so they need
-    %to be removed from ACTI and trueSW
-    [ACTI, trueSW, startTime, t] = modifyLength(ACTI, trueSW, startTime, t, resolution);
-
-    % Do the automatic scoring
+    % Read and process the ACTI data
     [SW, data, stat_res] = crc_ara_processIndiv(fn_ii); %#ok<*NASGU,*ASGLU>
+    nbDataPerDay = (60*60*24) / data.resolution;
+    
+    % Retrieve the values from the manual scoring
+    [pth,fn,ext] = fileparts(fn_ii);
+    def_xls = crc_ara_get_defaults('xls');
+    fn_xls = fullfile(pth,[fn,def_xls.fn_append,def_xls.ext]);
+    if exist(fn_xls,'file')~=2
+        error('CRC_ara:xls','XLSX reference file does not seem to exist');
+    end
+    [trueV] = crc_ara_getTrueValues(fn_xls, numel(data.ACTI), ...
+                                    data.startTime, nbDataPerDay);
+    % - trueV : structure containing the following fields
+    %   . trueSW, true sleep/wake series generated from the true sleep & 
+    %             wake times
+    %   . bedDate, bed times 
+    %   . upDate, up times
+    %   . sleepDate, sleep times
+    %   . wakeDate wake times
+        
+    % Sometime, all the nights weren't scored manually, so they need
+    % to be removed from ACTI and trueSW
+    [ACTI, trueSW, startTime, t] = crc_ara_modifyLength(ACTI, ...
+                                   trueV.trueSW, startTime, t, resolution);
 
     % Compare the scoring
     [errorRate, sensitivity, specificity, kappa, meanWakeError, stdWakeError, meanSleepError, stdSleepError] = stats(SW, wakeDate, sleepDate, sleepDuration, trueSW, trueWakeDate, trueSleepDate, displayPlot);
