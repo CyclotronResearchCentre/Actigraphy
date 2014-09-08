@@ -76,8 +76,15 @@ function comp_indiv(datafile, nbFiles)
 for ii=1:nbFiles
     fn_ii = deblank(datafile(ii,:));
 
-    % Read and process the ACTI data
-    [SW, data, stat_res] = crc_ara_processIndiv(fn_ii); %#ok<*NASGU,*ASGLU>
+    % Read in the ACTI data
+    [subjName, ACTI, nbDays, resolution, startTime, t] = crc_ara_getData(fn_ii);
+    % Create data structure
+    data = struct('ACTI',ACTI, ...
+        'resolution',resolution, ...
+        'nbDays',nbDays, ...
+        'startTime',startTime, ...
+    	't',t, ...
+        'subjName',subjName);
     nbDataPerDay = (60*60*24) / data.resolution;
     
     % Retrieve the values from the manual scoring
@@ -87,8 +94,8 @@ for ii=1:nbFiles
     if exist(fn_xls,'file')~=2
         error('CRC_ara:xls','XLSX reference file does not seem to exist');
     end
-    [trueV] = crc_ara_getTrueValues(fn_xls, numel(data.ACTI), ...
-                                    data.startTime, nbDataPerDay);
+    [trueV] = crc_ara_getTrueValues(fn_xls, numel(ACTI), ...
+                                    startTime, nbDataPerDay);
     % - trueV : structure containing the following fields
     %   . trueSW, true sleep/wake series generated from the true sleep & 
     %             wake times
@@ -99,23 +106,15 @@ for ii=1:nbFiles
         
     % Sometime, all the nights weren't scored manually, so they need
     % to be removed from ACTI and trueSW
-    [ACTI, trueSW, startTime, t] = crc_ara_modifyLength(ACTI, ...
-                                   trueV.trueSW, startTime, t, resolution);
+    [SW, data, trueV] = crc_ara_modifyLength(SW, data, trueV);
 
-    % Compare the scoring
-    [errorRate, sensitivity, specificity, kappa, meanWakeError, stdWakeError, meanSleepError, stdSleepError] = stats(SW, wakeDate, sleepDate, sleepDuration, trueSW, trueWakeDate, trueSleepDate, displayPlot);
+    % Process the individual file!
+    [SW, data, stat_res] = crc_ara_processIndiv(data); %#ok<*NASGU,*ASGLU>
         
-    stat_res = struct( ...
-        'errorRate',      errorRate, ...
-        'sensitivity',    sensitivity, ...
-        'specificity',    specificity, ...
-        'kappa',          kappa, ...
-        'meanWakeError',  meanWakeError, ...
-        'stdWakeError',   stdWakeError, ...
-        'meanSleepError', meanSleepError, ...
-        'stdSleepError',  stdSleepError ...
-        );
-
+    % Compare the scoring
+    [stat_res] = crc_ara_compScStat(SW, trueV.trueSW, true);
+    crc_ara_plotCircle(SW, data.startTime, nbDataPerDay, data.ACTI, trueV.trueSW);
+    
 end
 
 end
