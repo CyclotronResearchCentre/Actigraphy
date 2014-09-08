@@ -72,3 +72,8 @@ crc_ara_def.comp.ALL_SLEEP = 0;
 crc_ara_def.comp.ALL_WAKE = 1;
 crc_ara_def.comp.ALL_RANDOM = 2;
 
+%% Excell file convention
+crc_ara_def.xls.ext = '.xlsx' ; % file extension
+crc_ara_def.xls.fn_append = '_sleep analysis';
+
+end

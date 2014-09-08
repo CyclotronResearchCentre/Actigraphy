@@ -1,15 +1,15 @@
-function crc_ara_plotCircle(SW, startTime, nbDataPerDays, ACTI, trueSW)
+function crc_ara_plotCircle(SW, startTime, nbDataPerDay, ACTI, trueSW)
 %
-% FORMAT crc_ara_plotCircle(SW, trueSW, startTime, nbDataPerDays)
+% FORMAT crc_ara_plotCircle(SW, trueSW, startTime, nbDataPerDay)
 %
 % Plot the sleep/wake cycles, with wake/sleep times on a spiral.
 %
 % INPUT:
-% - SW            : sleep/wake time series
-% - startTime     : start time of recording
-% - nbDataPerDays : number of bins per day
-% - ACTI          : actigraphic data
-% - trueSW        : true sleep/wake time series, used as reference ([], def)
+% - SW           : sleep/wake time series
+% - startTime    : start time of recording
+% - nbDataPerDay : number of bins per day
+% - ACTI         : actigraphic data
+% - trueSW       : true sleep/wake time series, used as reference ([], def)
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
@@ -23,11 +23,11 @@ if nargin < 4, ACTI = []; end
 radius = 1;
 colors = ['b', 'r']; % BLUE = sleep, RED = wake
 ang = getStartAngle(startTime);
-angStep = 2 * pi / nbDataPerDays; % theta between two successives points on the circle
-radStep = 1/nbDataPerDays;
+angStep = 2 * pi / nbDataPerDay; % theta between two successives points on the circle
+radStep = 1/nbDataPerDay;
 origin = [0, 0]; % Center of the circle
 
-nbDays = ceil(numel(SW)/nbDataPerDays);
+nbDays = ceil(numel(SW)/nbDataPerDay);
 angCoord = ang:-angStep:-(2*pi*nbDays+ang);
 radCoord = radius:radStep:(radius+nbDays);
 line_length = nbDays+.5;
@@ -55,7 +55,6 @@ axis([-nbDays-1 nbDays+1 -nbDays-1 nbDays+1])
 %% If provided plot ACTI on top of spiral
 if ~isempty(ACTI) 
     if numel(ACTI)<numel(angCoord)
-%         ACTI_sc = ACTI/max(ACTI) * 1.5 ;  % Ensures values [0 1.5] fo visibility;
         ACTI_sc = ACTI/prctile(ACTI,99) ; % Ensures few values >1;
         ACTI_rad = ACTI_sc + radCoord(1:numel(ACTI));
         ACTI_ang = angCoord(1:numel(ACTI));

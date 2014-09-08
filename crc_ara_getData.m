@@ -1,4 +1,4 @@
-function [fileName, ACTI, nbDays, resolution, startTime, t] = crc_ara_getData(file)
+function [subjName, ACTI, nbDays, resolution, startTime, t] = crc_ara_getData(file)
 %
 % FORMAT [fileName, ACTI, nbDays, resolution, startTime, t] = crc_ara_getData(file)
 % 
@@ -16,19 +16,19 @@ function [fileName, ACTI, nbDays, resolution, startTime, t] = crc_ara_getData(fi
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-nbSecPerDays = 24*60*60;
+nbSecPerDay = 24*60*60;
 strline = '--------------------------';
 
 % Opening and reading of the file
-[fileName, ACTI, resolution, startTime, nbDays] = readFile(file); %#ok<*NASGU>
+[subjName, ACTI, resolution, startTime, nbDays] = readFile(file); %#ok<*NASGU>
 
 % Absolute time of the acquisition
 t_abs = startTime + ...
-    (0:resolution/nbSecPerDays:resolution/nbSecPerDays*(length(ACTI) - 1));
+    (0:resolution/nbSecPerDay:resolution/nbSecPerDay*(length(ACTI) - 1));
 % Relative time for each day of the acquisition (will be used for the plots)
 t = rem(t_abs, 1); 
 
-nbDays = round(length(ACTI) * resolution / nbSecPerDays);
+nbDays = round(length(ACTI) * resolution / nbSecPerDay);
 
 fprintf('%s \n', strline);
 fprintf('Number of days : %d \n', nbDays);

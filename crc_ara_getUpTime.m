@@ -1,6 +1,6 @@
-function [upTime] = crc_ara_getUpTime(ACTI, wakeTime, startTime, nbDataPerDays)
+function [upTime] = crc_ara_getUpTime(ACTI, wakeTime, startTime, nbDataPerDay)
 %
-% FORMAT [upTime] = crc_ara_getUpTime(ACTI, wakeTime, startTime, nbDataPerDays)
+% FORMAT [upTime] = crc_ara_getUpTime(ACTI, wakeTime, startTime, nbDataPerDay)
 % 
 % Roughly find the up time following the wake time
 %_______________________________________________________________________
@@ -9,7 +9,7 @@ function [upTime] = crc_ara_getUpTime(ACTI, wakeTime, startTime, nbDataPerDays)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-wakeTime = (wakeTime - startTime) * nbDataPerDays;
+wakeTime = (wakeTime - startTime) * nbDataPerDay;
 factor = crc_ara_get_defaults('but.factor');
 upTime = zeros(1,numel(wakeTime));
 
@@ -28,6 +28,6 @@ for i = 1:length(wakeTime)
     upTime(i) = indexMax;
 end;
 
-upTime = upTime / nbDataPerDays + startTime;
+upTime = upTime / nbDataPerDay + startTime;
 
 end

@@ -1,6 +1,6 @@
-function [bedTime] = crc_ara_getBedTime(ACTI, sleepTime, startTime, nbDataPerDays)
+function [bedTime] = crc_ara_getBedTime(ACTI, sleepTime, startTime, nbDataPerDay)
 % 
-% FORMAT [bedTime] = crc_ara_getBedTime(ACTI, sleepTime, startTime, nbDataPerDays)
+% FORMAT [bedTime] = crc_ara_getBedTime(ACTI, sleepTime, startTime, nbDataPerDay)
 %
 % Roughly estimate the time of going to bed.
 %
@@ -8,14 +8,14 @@ function [bedTime] = crc_ara_getBedTime(ACTI, sleepTime, startTime, nbDataPerDay
 % - ACTI          : actigraphic data
 % - sleepTime     : estimated sleep date & time
 % - startTime     : start time
-% - nbDataPerDays : #bins/da
+% - nbDataPerDay  : #bins/day
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-sleepTime = (sleepTime - startTime) * nbDataPerDays;
+sleepTime = (sleepTime - startTime) * nbDataPerDay;
 factor = crc_ara_get_defaults('but.factor');
 bedTime = zeros(1,numel(sleepTime));
 
@@ -34,6 +34,6 @@ for i = 1:length(sleepTime)
     bedTime(i) = indexMax;
 end;
 
-bedTime = bedTime / nbDataPerDays + startTime;
+bedTime = bedTime / nbDataPerDay + startTime;
 
 end
