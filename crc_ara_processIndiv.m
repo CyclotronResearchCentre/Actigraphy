@@ -53,7 +53,6 @@ nbSecPerDay = 24*60*60;
 %% Get Acti data & clean up, if not provided
 if ischar(fn_dat)
     [subjName, ACTI, nbDays, resolution, startTime, t] = crc_ara_getData(fn_dat);
-    nbDataPerDay = nbSecPerDay / resolution;
     
     % Sometimes the signal begins "too early" with a lot of 0 values
     %  -> they are removed
@@ -75,12 +74,15 @@ elseif isstruct(fn_dat)
     % Unpack data structure
     data = fn_dat;
     ACTI = data.ACTI;
+    startTime = data.startTime;
     resolution = data.resolution;
     nbDays = data.nbDays;
     t = data.t;
     subjName = data.subjName;
     fn_dat = data.fn_dat;
 end
+
+nbDataPerDay = nbSecPerDay / resolution;
 
 %% Extract the SW cycle
 % Preprocessing stage

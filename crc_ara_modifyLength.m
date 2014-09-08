@@ -1,4 +1,4 @@
-function [SW, data, trueV] = crc_ara_modifyLength(SW, data, trueV)
+function [data, trueV] = crc_ara_modifyLength(data, trueV)
 %
 % Sometime, all the nights in the actigraphic data were not scored 
 % manually. Therefore, in order to compare both automatic and manual
@@ -6,7 +6,6 @@ function [SW, data, trueV] = crc_ara_modifyLength(SW, data, trueV)
 % removed.
 %
 % INPUT:
-% - SW    : automatic SW scoring
 % - data  : the rest of the data derived from raw actigraphy file
 % - trueV : "true" values from manual scoring file
 % 
@@ -36,6 +35,5 @@ data.startTime = data.startTime + (start - 1) * ...
     datenum(0, 0, 0, 0, 0, data.resolution);
 data.nbDays = numel(trueV.bedDate);
 trueV.trueSW = trueSW(start:ending);
-SW = SW(start:ending);
 
 end
