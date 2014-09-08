@@ -1,52 +1,41 @@
-function [ACTI, trueSW, startTime, t] = modifyLength(ACTI, trueSW, startTime, t, resolution)
+function [SW, data, trueV] = crc_ara_modifyLength(SW, data, trueV)
 %
+% Sometime, all the nights in the actigraphic data were not scored 
+% manually. Therefore, in order to compare both automatic and manual
+% scoring, the 1st part of the data and automatic scoring has to be
+% removed.
+%
+% INPUT:
+% - SW    : automatic SW scoring
+% - data  : the rest of the data derived from raw actigraphy file
+% - trueV : "true" values from manual scoring file
+% 
+% OUTPUT:
+%   idem but updated.
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-constantes;
+ASLEEP = crc_ara_get_defaults('sw.ASLEEP');
+trueSW = trueV.trueSW;
 
-%Finds the first "Awake" record. The start of the recording is set to
-%300 records before it.
-start = 1;
-for i = 1:length(trueSW)
-    if trueSW(i) == ASLEEP
-        start = i - 300;
-        break;
-    end;
-end;
+% Finds the first "ASLEEP" record. The start of the recording is set to
+% 300 records before it.
+lASLEEP = find(trueSW==ASLEEP);
+start = max(1,lASLEEP(1)-300);
 
-if start < 1
-    start = 1;
-end;
+ending = min(numel(trueSW),lASLEEP(end)+500);
 
-%Finds the first "Awake" record. The start of the recording is set to
-%500 records after it. (300 and 500 are arbitrary chosen)
-ending = 0;
-for i = 1:length(trueSW)
-    if trueSW(end-i) == ASLEEP
-        if i < 500
-            ending = length(trueSW);
-        else
-            ending = length(trueSW) - (i - 500);
-        end;
-        break;
-    end;
-end;
-
-if ending > length(trueSW)
-    ending = length(trueSW);
-end;
-
-%ACTI and trueSW are modified to only contains records between start and
-%ending
-ACTI = ACTI(start:ending);
-trueSW = trueSW(start:ending);
-t = t(start:ending);
-startTime = startTime + (start - 1) * datenum(0, 0, 0, 0, 0, resolution);
-
-
+% A few things now get modified to only inclue the time period between
+% 'start' & 'ending', i.e. the few manually scored days.
+data.ACTI = data.ACTI(start:ending);
+data.t = data.t(start:ending);
+data.startTime = data.startTime + (start - 1) * ...
+    datenum(0, 0, 0, 0, 0, data.resolution);
+data.nbDays = numel(trueV.bedDate);
+trueV.trueSW = trueSW(start:ending);
+SW = SW(start:ending);
 
 end

@@ -27,7 +27,7 @@ angStep = 2 * pi / nbDataPerDay; % theta between two successives points on the c
 radStep = 1/nbDataPerDay;
 origin = [0, 0]; % Center of the circle
 
-nbDays = ceil(numel(SW)/nbDataPerDay);
+nbDays = ceil(numel(SW)/nbDataPerDay)+1;
 angCoord = ang:-angStep:-(2*pi*nbDays+ang);
 radCoord = radius:radStep:(radius+nbDays);
 line_length = nbDays+.5;
