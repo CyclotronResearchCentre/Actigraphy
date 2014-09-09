@@ -29,7 +29,7 @@ strline = '--------------------------';
 
 %% Confusion matrix
 % True positive if SW == AWAKE and trueSW == AWAKE
-confMatrix = confusionmat(~SW, ~trueSW);
+confMatrix = confMat(SW, trueSW);
 
 %% Computes some interesting parameters
 errorRate = sum(SW ~= trueSW) / length(SW);
@@ -61,15 +61,30 @@ if displayRes
     fprintf('%s \n', strline);
     
     fprintf('%s \n', strline);
-    fprintf('Error rate  : %2.2f%% \n', 100*errorRate);
-    fprintf('Sensitivity : %2.2f%% \n', 100*sensitivity);
-    fprintf('Specificity : %2.2f%% \n', 100*specificity);
-    fprintf('Kappa : %f \n', kappa);
-    fprintf('Adjusted kappa : %f \n', 2 * kappa - 1);
+    fprintf('Error rate  : %4.2f%% \n', 100*errorRate);
+    fprintf('Sensitivity : %4.2f%% \n', 100*sensitivity);
+    fprintf('Specificity : %4.2f%% \n', 100*specificity);
+    fprintf('Kappa       : %f \n', kappa);
+    fprintf('Adj. kappa  : %f \n', 2 * kappa - 1);
     fprintf('%s \n \n', strline);
 end
 
 end
+
+%% SUBFUNCTION
+% Estimate confusion matrix
+function CM = confMat(SW, trueSW)
+
+% True positive if SW == AWAKE and trueSW == AWAKE
+CM = zeros(2,2);
+CM(1,1) = sum(trueSW==1 & SW==1);
+CM(1,2) = sum(trueSW==1 & SW==0);
+CM(2,2) = sum(trueSW==0 & SW==0);
+CM(2,1) = sum(trueSW==0 & SW==1);
+
+end
+
+%% OLD BITS
 
 % % Plot the confusion matrix in a figure
 % figure;

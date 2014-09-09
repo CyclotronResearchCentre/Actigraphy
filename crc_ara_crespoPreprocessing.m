@@ -90,7 +90,7 @@ end;
 
 %% y1 is computed
 
-p = prctile(xf, percentile);
+p = crc_percentile(xf, percentile);
 y1 = zeros(1, length(xf));
 for i = 1:length(xf)
     if xf(i) > p
