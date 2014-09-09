@@ -1,8 +1,8 @@
-function [SW,data,stat_res] = crc_ara_processIndiv(fn_dat, option)
+function [SW,data,stat_anaRes] = crc_ara_processIndiv(fn_dat, option)
 %
-% FORMAT [SW,data,stat_res] = crc_ara_processIndiv(fn_dat, option)
+% FORMAT [SW,data,stat_anaRes] = crc_ara_processIndiv(fn_dat, option)
 % or
-% FORMAT [SW,data,stat_res] = crc_ara_processIndiv(data, option)
+% FORMAT [SW,data,stat_anaRes] = crc_ara_processIndiv(data, option)
 %
 % Processes a single actigraphy files.
 % - If a filename is passed then, data are read in and 'cleaned up' a bit
@@ -30,7 +30,7 @@ function [SW,data,stat_res] = crc_ara_processIndiv(fn_dat, option)
 %       . startTime  : start date & time
 %       . t          : time regressor for plot
 %       . subjName   : subject name (from file name)
-% - stat_res : some processed results
+% - stat_anaRes : some processed results, if requested. Otherwise [].
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
@@ -119,9 +119,9 @@ if option.calcExtra
     
     sleepDuration = wakeDate - sleepDate;
     % Computes some more stats
-    [stat_res] = crc_ara_sumStats(wakeDate, sleepDate, sleepDuration);
+    [stat_anaRes] = crc_ara_sumStats(wakeDate, sleepDate, sleepDuration);
     % With output
-    % stat_res = struct( ...
+    % stat_anaRes = struct( ...
     %     'meanWakeTime', meanWakeTime, ...
     %     'medianWakeTime', medianWakeTime, ...
     %     'stdWakeTime', stdWakeTime, ...
@@ -142,7 +142,9 @@ if option.calcExtra
         'actualWakeRatio', actualWakeRatio, ...
         'sleepDuration', sleepDuration ...
         );
-    stat_res.daily = daily;
+    stat_anaRes.daily = daily;
+else
+    stat_anaRes = [];
 end
 
 end
