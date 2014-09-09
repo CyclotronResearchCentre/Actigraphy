@@ -8,7 +8,7 @@ function varargout = crc_ara_main(datafile,option)
 % - datafile : list of files to process, if not use spm_select
 % - optin    : mode of operation:
 %       . 1, analysis a series of single files (INDIVIDUAL)[default]
-%       . 2, analysis and compares with soem ground truth a 
+%       . 2, analysis and compares with soem ground truth a
 %            series of single file (COMPARISON)
 %       . 3, analysis a series of single files and perform some
 %            group stats (GROUP)
@@ -38,23 +38,21 @@ end
 switch(option)
     case 1 % deal with files 1 by 1
         [SW, data, stat_anaRes] = process_indiv(datafile);
-        if nargout==1
-            varargout{1} = SW;
-        elseif nargout==2
-            varargout{1} = SW;
-            varargout{2} = data;
-        elseif nargout==3
-            varargout{1} = SW;
-            varargout{2} = data;
-            varargout{3} = stat_anaRes;
-        end
+        varargout{1} = SW;
+        varargout{2} = data;
+        varargout{3} = stat_anaRes;
     case 2 % deal with files 1 by 1 and comapre them with some reference
-        varargout = comp_indiv(datafile);
-%         [SW, data, trueV, trueSW, stat_anaRes, stat_compRes] = ...
-%             comp_indiv(datafile);
+        [SW, data, trueV, trueSW, stat_anaRes, stat_compRes] = ...
+            comp_indiv(datafile);
+        varargout{1} = SW;
+        varargout{2} = data;
+        varargout{3} = trueV;
+        varargout{4} = stat_anaRes;
+        varargout{5} = stat_compRes;       
     case 3 % deal with a group of files and reference for "group stats"
         % Option used to validate and draw conclusions for the 'rapport'.
-        varargout = process_group(datafile);
+        stat_grRes = process_group(datafile);
+        varargout{1} = stat_grRes;
 end;
 
 end
@@ -79,7 +77,7 @@ stat_anaRes = cell(1,nbFiles);
 for ii=1:nbFiles
     fn_ii = deblank(datafile(ii,:));
     [SW{ii}, data{ii}, stat_anaRes{ii}] = ...
-                           crc_ara_processIndiv(fn_ii); %#ok<*NASGU,*ASGLU>
+        crc_ara_processIndiv(fn_ii); %#ok<*NASGU,*ASGLU>
 end
 
 end
@@ -87,7 +85,7 @@ end
 %% comp_indiv
 function [SW, data, trueV, trueSW, stat_anaRes, stat_compRes] = comp_indiv(datafile, dis_opt)
 
-if nargin<2, dis_opt=true; end
+if nargin<2, dis_opt = true; end
 
 nbFiles = size(datafile, 1);
 SW = cell(1,nbFiles);
@@ -100,25 +98,25 @@ stat_compRes = cell(1,nbFiles);
 % Simply loop through all files.
 for ii=1:nbFiles
     fn_ii = deblank(datafile(ii,:));
-
+    
     [SW{ii}, data{ii}, trueV{ii}, stat_anaRes{ii}, stat_compRes{ii}] = ...
-                           crc_ara_compIndiv(fn_ii,dis_opt); %#ok<*NASGU,*ASGLU> 
+        crc_ara_compIndiv(fn_ii,dis_opt); %#ok<*NASGU,*ASGLU>
     trueSW{ii} = trueV{ii}.trueSW;
-% With 
-% - trueV, a structure containing the true values
-%   . trueSW, true sleep/wake series generated from the true sleep &
-%             wake times
-%   . bedDate, bed times
-%   . upDate, up times
-%   . sleepDate, sleep times
-%   . wakeDate wake times
-% - stat_compRes, a structure containing the fields:
-%   . CM          : confusion matrix
-%   . errorRate   : overall error rate
-%   . sensitivity : sensitivity of awake detection
-%   . specificity : specificity of awake detection
-%   . kappa       : Kappa coeficient of agreement
-                       
+    % With
+    % - trueV, a structure containing the true values
+    %   . trueSW, true sleep/wake series generated from the true sleep &
+    %             wake times
+    %   . bedDate, bed times
+    %   . upDate, up times
+    %   . sleepDate, sleep times
+    %   . wakeDate wake times
+    % - stat_compRes, a structure containing the fields:
+    %   . CM          : confusion matrix
+    %   . errorRate   : overall error rate
+    %   . sensitivity : sensitivity of awake detection
+    %   . specificity : specificity of awake detection
+    %   . kappa       : Kappa coeficient of agreement
+    
 end
 
 end
