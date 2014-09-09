@@ -26,21 +26,21 @@ end
 
 if nargin>0 && ~isempty(errorRates)
     fprintf('%s \n', strline);
-    fprintf('Mean error : %f \n', 1 - mean(errorRates));
-    fprintf('Max arror  : %f \n', 1 - max(errorRates));
-    fprintf('Min error  : %f \n', 1 - min(errorRates));
+    fprintf('Mean error : %4.2f%% \n', 100*mean(errorRates));
+    fprintf('Max arror  : %4.2f%% \n', 100*max(errorRates));
+    fprintf('Min error  : %4.2f%% \n', 100*min(errorRates));
 end
 if nargin>1 && ~isempty(sensitivities)
     fprintf('%s \n', strline);
-    fprintf('Mean Sensitivity : %f \n', mean(sensitivities));
-    fprintf('Max sensitivity  : %f \n', max(sensitivities));
-    fprintf('Min sensitivity  : %f \n', min(sensitivities));
+    fprintf('Mean Sensitivity : %4.2f%% \n', 100*mean(sensitivities));
+    fprintf('Max sensitivity  : %4.2f%% \n', 100*max(sensitivities));
+    fprintf('Min sensitivity  : %4.2f%% \n', 100*min(sensitivities));
 end
 if nargin>2 && ~isempty(specificities)
     fprintf('%s \n', strline);
-    fprintf('Mean specificity : %f \n', mean(specificities));
-    fprintf('Max specificity  : %f \n', max(specificities));
-    fprintf('Min specificity  : %f \n', min(specificities));
+    fprintf('Mean specificity : %4.2f%% \n', 100*mean(specificities));
+    fprintf('Max specificity  : %4.2f%% \n', 100*max(specificities));
+    fprintf('Min specificity  : %4.2f%% \n', 100*min(specificities));
 end
 if nargin>3 && ~isempty(kappas)
     fprintf('%s \n', strline);
@@ -68,20 +68,3 @@ end
 
 end
 
-% mCM = [1024 34 ; 56 903];
-% fprintf('%s \n', strline);
-% fprintf('|\t\t | Pr. W | Pr. S |\n');
-% fprintf('%s \n', strline);
-% fprintf('| True W | %5d | %5d |\n', mCM(1,1), mCM(1,2))
-% fprintf('%s \n', strline);
-% fprintf('| True S | %5d | %5d |\n', mCM(2,1), mCM(2,2))
-% fprintf('%s \n', strline);
-% 
-% pCM = mCM /sum(mCM(:))*100
-% fprintf(' %s \n', strline);
-% fprintf('|\t\t | Pr. W  | Pr. S  |\n');
-% fprintf(' %s \n', strline);
-% fprintf('| True W | %5.2f%% | %5.2f%% |\n', pCM(1,1), pCM(1,2))
-% fprintf(' %s \n', strline);
-% fprintf('| True S | %5.2f%% | %5.2f%% |\n', pCM(2,1), pCM(2,2))
-% fprintf(' %s \n', strline);
