@@ -11,4 +11,4 @@ So far
 - some bit of code are hard-coded for a sampling interval of 60s
 
 Administrators:
-- Christophe Phillips
+- Christophe Phillips, email c_dot_phillips_at_ulg_dot_ac_dot_be
