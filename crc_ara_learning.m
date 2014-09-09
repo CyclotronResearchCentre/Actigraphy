@@ -14,8 +14,8 @@ function [SW] = crc_ara_learning(ACTI, SW, resolution)
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
-ASLEEP = crc_ara_get_defaults('acti.ASLEEP');
-AWAKE = crc_ara_get_defaults('acti.AWAKE');
+ASLEEP = crc_ara_get_defaults('sw.ASLEEP');
+AWAKE = crc_ara_get_defaults('sw.AWAKE');
 
 transitions = find(abs(diff(SW))==1);
 sleepIndex = [];
@@ -67,7 +67,7 @@ while i < length(SW) - windowLength - 60
         window = ACTI(i:i+(windowLength-1));
         nbZeros = sum(window == 0);
         features = [features; ...
-            median(window) iqr(window) mean(window) std(window) ...
+            median(window) crc_iqr(window) mean(window) std(window) ...
             max(window) min(window) mode(window) nbZeros state]; %#ok<*AGROW>
         
     end;
@@ -95,7 +95,8 @@ for i = 1:length(sleepIndex)
         window = ACTI(index+j:index+(windowLength-1)+j);
         nbZeros = sum(window == 0);
         %Computes the features of the window
-        windowFeatures = [median(window) iqr(window) mean(window) std(window) max(window) min(window) mode(window) nbZeros];
+        windowFeatures = [median(window) crc_iqr(window) mean(window) ...
+            std(window) max(window) min(window) mode(window) nbZeros];
         
         %Uses the neural network to find if the subject is awake or asleep
         Y = sim(net, windowFeatures');
@@ -116,7 +117,8 @@ for i = 1:length(wakeIndex)
         window = ACTI(index+j:index+(windowLength-1)+j);
         nbZeros = sum(window == 0);
         % Computes the features of the window        
-        windowFeatures = [median(window) iqr(window) mean(window) std(window) max(window) min(window) mode(window) nbZeros];
+        windowFeatures = [median(window) crc_iqr(window) mean(window) ...
+            std(window) max(window) min(window) mode(window) nbZeros];
 
         % Uses the neural network to find if the subject is awake or asleep        
         Y = sim(net, windowFeatures');

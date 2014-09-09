@@ -55,7 +55,7 @@ axis([-nbDays-1 nbDays+1 -nbDays-1 nbDays+1])
 %% If provided plot ACTI on top of spiral
 if ~isempty(ACTI) 
     if numel(ACTI)<numel(angCoord)
-        ACTI_sc = ACTI/prctile(ACTI,99) ; % Ensures few values >1;
+        ACTI_sc = ACTI/crc_percentile(ACTI,99) ; % Ensures few values >1;
         ACTI_rad = ACTI_sc + radCoord(1:numel(ACTI));
         ACTI_ang = angCoord(1:numel(ACTI));
         crc_ara_drawCircle(origin,ACTI_rad,ACTI_ang,'m');
