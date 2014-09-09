@@ -1,6 +1,6 @@
-function crc_ara_plotSW(fileName, ACTI, SW, resolution, t, trueSW)
+function crc_ara_plotSW(fileName, ACTI, SW, resolution, t, trueSW, fn)
 %
-% FORMAT crc_ara_plotSW(fileName, ACTI, SW, trueSW, resolution, t)
+% FORMAT crc_ara_plotSW(fileName, ACTI, SW, resolution, t, trueSW, fn)
 %
 % Plot the raw actigraphic data and the sleep/wake cycles.
 %
@@ -11,12 +11,14 @@ function crc_ara_plotSW(fileName, ACTI, SW, resolution, t, trueSW)
 % - resolution : temporal resolution
 % - t          : time regressor for plots
 % - trueSW     : true sleep/wake time series, used as reference ([], def)
+% - fn         : file name for title ([], def)
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
 % Written by M. Gonzalez Y Viagas & C. Phillips, 2014
 % Cyclotron Research Centre, University of Liege, Belgium
 
+if nargin < 7, fn = []; end
 if nargin < 6, trueSW = []; end
 
 % If we are in comparison mode, we show 4 subplots
@@ -33,6 +35,9 @@ tmp = ceil(max(ACTI)/1000)*1000; % Rounded to top 1000
 yValues = 0:500:tmp;
 
 figure('name', fileName);
+if ~isempty(fn)
+    title(fn)
+end
 ax(1) = subplot(nbPlots, 1, 1);
 hold on;
 

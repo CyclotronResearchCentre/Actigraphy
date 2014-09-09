@@ -1,4 +1,4 @@
-function crc_ara_plotCircle(SW, startTime, nbDataPerDay, ACTI, trueSW)
+function crc_ara_plotCircle(SW, startTime, nbDataPerDay, ACTI, trueSW, fn)
 %
 % FORMAT crc_ara_plotCircle(SW, trueSW, startTime, nbDataPerDay)
 %
@@ -8,8 +8,9 @@ function crc_ara_plotCircle(SW, startTime, nbDataPerDay, ACTI, trueSW)
 % - SW           : sleep/wake time series
 % - startTime    : start time of recording
 % - nbDataPerDay : number of bins per day
-% - ACTI         : actigraphic data
+% - ACTI         : actigraphic data ([], def)
 % - trueSW       : true sleep/wake time series, used as reference ([], def)
+% - fn           : file name  ([], def)
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
@@ -17,6 +18,7 @@ function crc_ara_plotCircle(SW, startTime, nbDataPerDay, ACTI, trueSW)
 % Cyclotron Research Centre, University of Liege, Belgium
 
 %% Define key stuff
+if nargin < 6, fn = []; end
 if nargin < 5, trueSW = []; end
 if nargin < 4, ACTI = []; end
 
@@ -51,6 +53,9 @@ set(hf,'Position',[500 300 1200 800])
 hold on;
 axis equal;
 axis([-nbDays-1 nbDays+1 -nbDays-1 nbDays+1])
+if ~isempty(fn)
+    title(fn)
+end
 
 %% If provided plot ACTI on top of spiral
 if ~isempty(ACTI) 
@@ -192,4 +197,28 @@ else
             'Std ref. transition time', 'Location','BestOutside');    
 end
 
+end
+
+%% SUBFUNCTION
+
+function [ang] = getStartAngle(startTime)
+%
+% Return the time of day angle from the starting time.
+%
+% INPUT:
+% - startTime : date vector
+%_______________________________________________________________________
+
+startTime = datestr(startTime);
+% If the time of the beginning is defined in startTime, it is used
+if numel(startTime) > 11
+startHour = str2double(startTime(13:14));
+startMinute = str2double(startTime(16:17));
+% Else, it is set to midnight
+else
+startHour = 0;
+startMinute = 0;
+end;
+ang = pi / 2 - ((2 * pi) / 24) * startHour - ...
+((2 * pi) / (24 * 60)) * startMinute;
 end

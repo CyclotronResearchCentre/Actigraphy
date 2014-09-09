@@ -100,9 +100,9 @@ end
 if option.dispSpirSW
     % Plots the data on a circling spiral
     if option.dispSpirAC
-        crc_ara_plotCircle(SW, startTime, nbDataPerDay, ACTI);
+        crc_ara_plotCircle(SW, startTime, nbDataPerDay, ACTI, [], subjName);
     else
-        crc_ara_plotCircle(SW, startTime, nbDataPerDay);
+        crc_ara_plotCircle(SW, startTime, nbDataPerDay, [], [], subjName);
     end
 end;
 
