@@ -29,8 +29,8 @@ percentile = ara_def.percentile;
 % Lw = ara_def.Lw;
 % hs = ara_def.hs;
 
-ASLEEP = crc_ara_get_defaults('acti.ASLEEP');
-AWAKE = crc_ara_get_defaults('acti.AWAKE');
+ASLEEP = crc_ara_get_defaults('sw.ASLEEP');
+AWAKE = crc_ara_get_defaults('sw.AWAKE');
 
 % Should be done for the true Crespo preprocessing but is useless due to our
 % own "pre-preprocessing" done in individual.m
@@ -103,7 +103,7 @@ end;
 
 %% Opening - closing
 
-%Lp = (60 + 1) * (60 / resolution); %Opening-closing by a window of 61 minutes
+%Lp = (60 + 1) * (60 / resolution); % Opening-closing by a window of 61 minutes
 Lp = (180 + 1) * (60 / resolution);
 morphWindow = linspace(AWAKE, AWAKE, Lp);
 y = imopen(imclose(y1, morphWindow), morphWindow); %Wake and rest periods of less than 60 minutes are removed

@@ -27,9 +27,9 @@ angStep = 2 * pi / nbDataPerDay; % theta between two successives points on the c
 radStep = 1/nbDataPerDay;
 origin = [0, 0]; % Center of the circle
 
-nbDays = ceil(numel(SW)/nbDataPerDay)+1;
-angCoord = ang:-angStep:-(2*pi*nbDays+ang);
-radCoord = radius:radStep:(radius+nbDays);
+nbDays = ceil(numel(SW)/nbDataPerDay);
+angCoord = (0:-angStep:-(2*pi*nbDays))+ang;
+radCoord = (0:radStep:nbDays)+radius;
 line_length = nbDays+.5;
 
 % find W->S/S->W transitions
@@ -98,17 +98,25 @@ v1 = mod(angWake,-2*pi);
 v2 = mod(angWake-pi/2,-2*pi)+pi/2;
 if std(v1)>std(v2), angWake = v2; else angWake = v1; end
 m_angWake = median(angWake); s_angWake = std(angWake);
-p(4) = crc_ara_drawCircle(origin,[0 line_length],[m_angWake m_angWake],'k');
-p(5) = crc_ara_drawCircle(origin,[0 line_length],[m_angWake+s_angWake m_angWake+s_angWake],'--k');
-crc_ara_drawCircle(origin,[0 line_length],[m_angWake-s_angWake m_angWake-s_angWake],'--k');
+p(4) = crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angWake m_angWake],'k');
+p(5) = crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angWake+s_angWake m_angWake+s_angWake],'--k');
+crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angWake-s_angWake m_angWake-s_angWake],'--k');
 if ~isempty(trueSW)
     angtrueWake  = angCoord(ltrue_S2Wt); %#ok<*FNDSB>
     % Avoid angle wrapping issues with 2 calculations:
     v1 = mod(angtrueWake,-2*pi);
     v2 = mod(angtrueWake-pi/2,-2*pi)+pi/2;
     if std(v1)>std(v2), angtrueWake = v2; else angtrueWake = v1; end
-    m_angtrueWake = median(angtrueWake); 
-    p(7) = crc_ara_drawCircle(origin,[0 line_length],[m_angtrueWake m_angtrueWake],'g');
+    m_angtrueWake = median(angtrueWake); s_angtrueWake = std(angtrueWake); 
+    p(7) = crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angtrueWake m_angtrueWake],'g');
+    p(8) = crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angtrueWake+s_angtrueWake m_angtrueWake+s_angtrueWake],'--g');
+    crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angtrueWake-s_angtrueWake m_angtrueWake-s_angtrueWake],'--g');
 end
 
 angSleep = angCoord(l_W2St);
@@ -118,16 +126,23 @@ v2 = mod(angSleep-pi/2,-2*pi)+pi/2;
 if std(v1)>std(v2), angSleep = v2; else angSleep = v1; end
 m_angSleep = median(angSleep); s_angSleep = std(angSleep);
 crc_ara_drawCircle(origin,[0 line_length],[m_angSleep m_angSleep],'k');
-crc_ara_drawCircle(origin,[0 line_length],[m_angSleep+s_angSleep m_angSleep+s_angSleep],'--k');
-crc_ara_drawCircle(origin,[0 line_length],[m_angSleep-s_angSleep m_angSleep-s_angSleep],'--k');
+crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angSleep+s_angSleep m_angSleep+s_angSleep],'--k');
+crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angSleep-s_angSleep m_angSleep-s_angSleep],'--k');
 if ~isempty(trueSW)
     angtrueSleep = angCoord(ltrue_W2St);
     % Avoid angle wrapping issues with 2 calculations:
     v1 = mod(angtrueSleep,-2*pi);
     v2 = mod(angtrueSleep-pi/2,-2*pi)+pi/2;
     if std(v1)>std(v2), angtrueSleep = v2; else angtrueSleep = v1; end
-    m_angtrueSleep = median(angtrueSleep); 
-    crc_ara_drawCircle(origin,[0 line_length],[m_angtrueSleep m_angtrueSleep],'k');
+    m_angtrueSleep = median(angtrueSleep); s_angtrueSleep = std(angtrueSleep); 
+    crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angtrueSleep m_angtrueSleep],'g');
+    crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angtrueSleep+s_angtrueSleep m_angtrueSleep+s_angtrueSleep],'--g');
+    crc_ara_drawCircle(origin,[0 line_length], ...
+        [m_angtrueSleep-s_angtrueSleep m_angtrueSleep-s_angtrueSleep],'--g');
 end
 
 %% Add median w/s times
@@ -139,7 +154,21 @@ t_sleep = -m_angSleep/2/pi*24+6;
 xy_t_sleep = [cos(m_angSleep) sin(m_angSleep)]*(line_length+.2);
 text(xy_t_sleep(1),xy_t_sleep(2),sprintf('%02d:%02d', ...
         fix(t_sleep),round((t_sleep-fix(t_sleep))*60)))
-
+if ~isempty(trueSW)
+    t_truewake = -m_angtrueWake/2/pi*24+6;
+    xy_t_truewake = [cos(m_angtrueWake) sin(m_angtrueWake)] ...
+        * (line_length+.2);
+    text(xy_t_truewake(1),xy_t_truewake(2),sprintf('%02d:%02d', ...
+        fix(t_truewake),round((t_truewake-fix(t_truewake))*60)), ...
+        'Color','g')
+    t_truesleep = -m_angtrueSleep/2/pi*24+6;
+    xy_t_truesleep = [cos(m_angtrueSleep) sin(m_angtrueSleep)] ...
+        * (line_length+.2);
+    text(xy_t_truesleep(1),xy_t_truesleep(2),sprintf('%02d:%02d', ...
+        fix(t_truesleep),round((t_truesleep-fix(t_truesleep))*60)), ...
+        'Color','g')
+end
+    
 %% Add some text informations
 text(0, nbDays+1.4, 'Midnight', 'FontWeight','Bold', ...
     'HorizontalAlignment','Center','VerticalAlignment','Bottom');
@@ -158,9 +187,9 @@ if isempty(trueSW)
             'Location','BestOutside');
 else
     legend(p, 'Sleep time', 'Wake time', 'Transition time', ...
-            'Median transition time', 'std transition time', ...
+            'Median transition time', 'Std transition time', ...
             'Ref. transition time', 'Median ref. transition time', ... 
-            'Location','BestOutside');    
+            'Std ref. transition time', 'Location','BestOutside');    
 end
 
 end
