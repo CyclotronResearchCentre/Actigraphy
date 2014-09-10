@@ -84,8 +84,10 @@ option = struct('dispActiSW', false, ... % Display SW and ACTI time series
 %% Compare the scoring
 [stat_compRes] = crc_ara_compScStat(SW, trueV.trueSW, true);
 if dis_opt
+    crc_ara_plotSW(subjName, data.ACTI, SW, data.resolution, data.t, ...
+        trueV.trueSW, data.subjName);
     crc_ara_plotCircle(SW, data.startTime, nbDataPerDay, data.ACTI, ...
-        trueV.trueSW);
+        trueV.trueSW, data.subjName);
 end
 
 end

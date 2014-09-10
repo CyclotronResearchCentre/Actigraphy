@@ -49,11 +49,11 @@ crc_ara_def.sw.AWAKE  = 1;
 crc_ara_def.acti.res_opt.dispActiSW = true; % Display SW and ACTI time series
 crc_ara_def.acti.res_opt.dispSpirSW = true; % Display SW on circle
 crc_ara_def.acti.res_opt.dispSpirAC = true; % Display ACTI data on circle
-crc_ara_def.acti.res_opt.calcExtra  = true; % Estimate extra parameters
+crc_ara_def.acti.res_opt.calcExtra  = false; % Estimate extra parameters
 crc_ara_def.acti.res_opt.saveRes    = false;% Save the results for each data file
 crc_ara_def.acti.sleepToWakeSec = 1800; % in sec (waking up = 30 active minutes activity)
 crc_ara_def.acti.wakeToSleepSec = 1800; % in sec (falling asleep = 30 inactive minutes)
-crc_ara_def.acti.useNN = false; % use NN to improve Crespo solution, or not
+crc_ara_def.acti.useNN = true; % use NN to improve Crespo solution, or not
 
 %% Crespo constantes
 crc_ara_def.crespo.z = 15;
@@ -63,7 +63,7 @@ crc_ara_def.crespo.winAlpha = 1;
 crc_ara_def.crespo.Lp = 60 + 1;
 crc_ara_def.crespo.Lw = 150;
 crc_ara_def.crespo.hs = 8;
-crc_ara_def.crespo.percentile = 30;
+crc_ara_def.crespo.percentile = 33;
 
 %% Bed & Up time constantes
 crc_ara_def.but.factor = 1.8;

@@ -37,8 +37,8 @@ percentile = ara_def.percentile;
 ASLEEP = crc_ara_get_defaults('sw.ASLEEP');
 AWAKE = crc_ara_get_defaults('sw.AWAKE');
 
-% Should be done for the true Crespo preprocessing but is useless due to our
-% own "pre-preprocessing" done in individual.m
+% Should be done for the true Crespo preprocessing but is useless due to 
+% our own "pre-preprocessing" done in crc_ara_processIndiv.m
 
 % %% Apply F{.}
 % i = 1;
@@ -76,42 +76,42 @@ AWAKE = crc_ara_get_defaults('sw.AWAKE');
 x = ACTI;
 
 %% x is padded
-
-xp = zeros(1, length(x) + 2 * 30 * winAlpha * (60 / resolution)); %x padded
+Lw30 = round(30 * winAlpha * (60 / resolution));
+xp = zeros(1, length(x) + 2 * Lw30); %x padded
 m = max(ACTI);
-xp(1:30*winAlpha*(60/resolution)) = m;
-xp(30*winAlpha*(60/resolution)+1:end-30*winAlpha*(60/resolution)) = x;
-xp(end-30*winAlpha*(60/resolution)+1:end) = m;
+xp(1:Lw30) = m;
+xp(Lw30+1:end-Lw30) = x;
+xp(end-Lw30+1:end) = m;
 
-%% x is filtered by a median operator
+%% (padded) x is filtered by a median operator
 
 xf = zeros(1, length(ACTI));
 
-Lw = 60 * winAlpha * (60 / resolution); %The median window has a length of 60 * alpha minutes
-for i = 1:length(ACTI)
-    medianWindow = xp(i:i+Lw);
-    xf(i) = median(medianWindow);
-end;
+Lw = -Lw30:Lw30;
+for ii = 1:numel(x)
+    medWin = xp(ii+Lw30+Lw);
+    xf(ii) = median(medWin);
+end
+
+% Lw = round(60 * winAlpha * (60 / resolution)); % The median window has a length of 60 * alpha minutes
+% for i = 1:length(ACTI)
+%     medianWindow = xp(i:i+Lw);
+%     xf(i) = median(medianWindow);
+% end;
 
 %% y1 is computed
 
 p = crc_percentile(xf, percentile);
 y1 = zeros(1, length(xf));
-for i = 1:length(xf)
-    if xf(i) > p
-        y1(i) = AWAKE;
-    else
-        y1(i) = ASLEEP;
-    end;
-end;
-
+y1(xf>p) = AWAKE;
+y1(xf<=p) = ASLEEP;
 
 %% Opening - closing
 
-%Lp = (60 + 1) * (60 / resolution); % Opening-closing by a window of 61 minutes
-Lp = (180 + 1) * (60 / resolution);
+% Lp = (60 + 1) * (60 / resolution); % Opening-closing by a window of 61 minutes
+Lp = (180 + 1) * (60 / resolution); % Opening-closing by a window of 181 minutes
 morphWindow = linspace(AWAKE, AWAKE, Lp);
-y = imopen(imclose(y1, morphWindow), morphWindow); %Wake and rest periods of less than 60 minutes are removed
+y = imopen(imclose(y1, morphWindow), morphWindow); % Wake and rest periods of less than 60 minutes are removed
 
 SW = y;
 
