@@ -13,6 +13,11 @@ function [SW, x, xf, y1] = crc_ara_crespoPreprocessing(ACTI, resolution)
 % - x   : time series processed, ACTI or some processed ACTI 
 % - xf  : filtered time series
 % - y1  : sleep/wake time series before morphological operation
+%
+% Reference:
+% Crespo, C.; Aboy, M.; Fernández, J. R. & Mojón,
+% A. Automatic identification of activity-rest periods based on actigraphy 
+% Med. Biol. Engineering and Computing, 2012, 50, 329-340
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 

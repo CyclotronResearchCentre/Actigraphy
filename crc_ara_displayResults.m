@@ -44,9 +44,9 @@ if nargin>2 && ~isempty(specificities)
 end
 if nargin>3 && ~isempty(kappas)
     fprintf('%s \n', strline);
-    fprintf('Kappa moyen : %f \n', mean(kappas));
-    fprintf('Kappa max : %f \n', max(kappas));
-    fprintf('Kappa min : %f \n', min(kappas));
+    fprintf('Mean Kappa : %f \n', mean(kappas));
+    fprintf('Max Kappa  : %f \n', max(kappas));
+    fprintf('Min Kappa  : %f \n', min(kappas));
 end
 fprintf('%s \n \n', strline);
 

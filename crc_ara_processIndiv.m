@@ -4,6 +4,9 @@ function [SW,data,stat_anaRes] = crc_ara_processIndiv(fn_dat, option)
 % or
 % FORMAT [SW,data,stat_anaRes] = crc_ara_processIndiv(data, option)
 %
+% Estimate the SW series from the actigrahic data. Use the Crespo algorithm
+% to begin with, then a neural network to learn and improve the scoring.
+%
 % Processes a single actigraphy files.
 % - If a filename is passed then, data are read in and 'cleaned up' a bit
 %   before being processed.
@@ -41,6 +44,8 @@ function [SW,data,stat_anaRes] = crc_ara_processIndiv(fn_dat, option)
 opt_def = crc_ara_get_defaults('acti.res_opt');
 if nargin<2, option = []; end
 option = crc_ara_check_flag(opt_def,option);
+
+useNN = crc_ara_get_defaults('acti.useNN');
 
 % Select 1 file?
 if nargin<1,
@@ -85,12 +90,14 @@ end
 nbDataPerDay = nbSecPerDay / resolution;
 
 %% Extract the SW cycle
-% Preprocessing stage
+% Preprocessing stage, using Crespo algo.
 [SW, x, xf, y1] = crc_ara_crespoPreprocessing(ACTI, resolution); %#ok<*NASGU,*ASGLU>
 % crc_ara_plotSW(subjName, ACTI, SW, resolution, t);
 
-% Processing stage
-[SW] = crc_ara_learning(ACTI, SW, resolution);
+if useNN
+    % Processing stage, using the neural network
+    [SW] = crc_ara_learning(ACTI, SW, resolution);
+end
 
 %% Plot results and get things out
 if option.dispActiSW
