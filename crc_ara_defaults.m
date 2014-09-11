@@ -65,6 +65,12 @@ crc_ara_def.crespo.Lw = 150;
 crc_ara_def.crespo.hs = 8;
 crc_ara_def.crespo.percentile = 33;
 
+%% Learning parameters
+crc_ara_def.learn.windowLength = 15; % window size on which features are extracted
+crc_ara_def.learn.winTest = 60; % window size around 1st estimate of transition
+crc_ara_def.learn.skipBE = 60; % window skipped at beginning and end
+crc_ara_def.learn.threshL = .99; % decision threshold
+
 %% Bed & Up time constantes
 crc_ara_def.but.factor = 1.8;
 

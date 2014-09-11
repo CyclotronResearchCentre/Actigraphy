@@ -16,52 +16,27 @@ function [SW] = crc_ara_learning(ACTI, SW, resolution)
 
 ASLEEP = crc_ara_get_defaults('sw.ASLEEP');
 AWAKE = crc_ara_get_defaults('sw.AWAKE');
-
-transitions = find(abs(diff(SW))==1);
-sleepIndex = [];
-wakeIndex = [];
-sleep = {};
-wake = {};
-totalSleep = [];
-totalWake = [];
-
-state = AWAKE;
-index = 1;
-a = 1;
-b = 1;
+def_learn = crc_ara_get_defaults('learn');
 
 %% Find all the sleep and wake indexes (= where the transitions happen)
-for ii = 1:length(transitions)
-    if state == AWAKE
-        sleepIndex = [sleepIndex; transitions(ii)];
-        wake{a} = ACTI(index:transitions(ii)-1);
-        totalWake = [totalWake, ACTI(index:transitions(ii)-1)];
-        a = a + 1;
-        state = ASLEEP;
-        index = transitions(ii);
-    else
-        wakeIndex = [wakeIndex; transitions(ii)];
-        sleep{b} = ACTI(index:transitions(ii)-1);
-        totalSleep = [totalSleep, ACTI(index:transitions(ii) - 1)];
-        b = b + 1;
-        state = AWAKE;
-        index = transitions(ii);
-    end;
-end;
-wake{b} = ACTI(index:end); %#ok<*NASGU>
+% transitions = find(abs(diff(SW))==1);
+sleepIndex = find(diff(SW)==-1);
+wakeIndex = find(diff(SW)==1);
+
 
 %% Divide SW into subwindows and extract interesting features
-
 features = [];
-windowLength = 15;
-ii = 61; % Begins after 1 hour
+windowLength = def_learn.windowLength;
+windowLength2 = round(windowLength/2); % half window length
+winTest = def_learn.winTest; % Begins after 1 hour
+ii = def_learn.skipBE + 1; % Begins after 1 hour
 
-while ii < length(SW) - windowLength - 60
-    SWwindow = SW(ii:ii+(windowLength-1));
-    tmpWindow = SW(ii-60:ii+(windowLength-1)+60);
-    
+while ii < length(SW) - windowLength - def_learn.skipBE % finish 1h before end
     % Only the records 'far' (at least 1 hour after or before) a transition
     % are taken into account
+    SWwindow = SW(ii:ii+(windowLength-1));
+    tmpWindow = SW(ii-winTest:ii+(windowLength-1)+winTest);
+    
     if length(unique(tmpWindow)) == 1
         state = unique(SWwindow);
         window = ACTI(ii:ii+(windowLength-1));
@@ -84,35 +59,40 @@ net.trainParam.epochs = 300;
 net.trainParam.showWindow = 0;
 net = train(net, inp', out');
 
-back = 60 * (60 / resolution); %120 minute-long window
+back = round(winTest * (60 / resolution)); % 2 x winTest window
+
+threshL = def_learn.threshL;
+% fplot(ACTI), hold on, plot(SW*1000,'r')
 
 % Finds more precise sleep times using the neural network
 for ii = 1:length(sleepIndex)
     index = sleepIndex(ii) - back;
-    SW(index:sleepIndex(ii)) = ASLEEP; %The whole window is set to sleep
-    
+    SW(index:sleepIndex(ii)) = ASLEEP; % The whole window is set to 'sleep'
+                                       % 2nd part is already 'sleep'
+    Y = zeros(1,2*back);
     for jj = 0:2*back-1
-        window = ACTI(index+jj:index+(windowLength-1)+jj);
+        window = ACTI(index+(jj:(windowLength-1)+jj));
         nbZeros = sum(window == 0);
-        %Computes the features of the window
+        % Computes the features of the window
         windowFeatures = [median(window) crc_iqr(window) mean(window) ...
             std(window) max(window) min(window) mode(window) nbZeros];
         
         %Uses the neural network to find if the subject is awake or asleep
-        Y = sim(net, windowFeatures');
+        Y(jj+1) = sim(net, windowFeatures');
         
-        %If the window is 'almost certainly' a asleep window
-        if Y > 0.99
-            SW(index:index+(windowLength-1)+jj) = AWAKE;
-        end;
     end;    
+    % Pick the latest moment we're sure subject is awake
+    i_Wake = max(find(Y>threshL)); %#ok<*MXFND>
+    SW(index+(0:i_Wake+windowLength2)) = AWAKE;
+%     fplot(ACTI(index+(0:2*back-1))), hold on, plot(1000*Y,'r'), plot(1000*threshL*SW(index+(0:2*back-1)),'g')
 end;
 
 % Finds more precise wake times using the neural network
 for ii = 1:length(wakeIndex)
     index = wakeIndex(ii) - back;
-    SW(index:index+back) = AWAKE; %The whole window is set to sleep
+    SW(index:index+back) = AWAKE; %The whole window is set to wake
     
+    Y = zeros(1,2*back);
     for jj = 0:2*back - 1
         window = ACTI(index+jj:index+(windowLength-1)+jj);
         nbZeros = sum(window == 0);
@@ -121,13 +101,13 @@ for ii = 1:length(wakeIndex)
             std(window) max(window) min(window) mode(window) nbZeros];
 
         % Uses the neural network to find if the subject is awake or asleep        
-        Y = sim(net, windowFeatures');
+        Y(jj+1) = sim(net, windowFeatures');
         
-        % If the window is 'almost certainly' a awake window
-        if Y < 0.01
-            SW(index:index+(windowLength-1)+jj) = ASLEEP;
-        end;
     end;    
+    % Pick the earliest moment we're sure subject is awake
+    i_Sleep = min(find(Y>threshL)); %#ok<*MXFND>
+    SW(index+(0:i_Sleep+windowLength2)) = ASLEEP;
+%     fplot(ACTI(index+(0:2*back-1))), hold on, plot(1000*Y,'r'), plot(1000*threshL*SW(index+(0:2*back-1)),'g')
 end;
 
 
