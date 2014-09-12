@@ -137,23 +137,31 @@ errorRates = zeros(1, nbFiles);
 sensitivities = zeros(1, nbFiles);
 specificities = zeros(1, nbFiles);
 kappas = zeros(1, nbFiles);
+d_tWake = zeros(1, nbFiles);
+d_tSleep = zeros(1, nbFiles);
+
 for ii=1:nbFiles
     errorRates(ii) = stat_compRes{ii}.errorRate;
     sensitivities(ii) = stat_compRes{ii}.sensitivity;
     specificities(ii) = stat_compRes{ii}.specificity;
     kappas(ii) = stat_compRes{ii}.kappa;
     CMs(:,:,ii) = stat_compRes{ii}.CM;
+    d_tWake(ii) = stat_compRes{ii}.SWtimes.trueSWt.d_tWake;
+    d_tSleep(ii) = stat_compRes{ii}.SWtimes.trueSWt.d_tSleep;
 end
 
 % Display mean/min/max for errorrate/sensitivity/specificity/kappa/CM
-crc_ara_displayResults(errorRates, sensitivities, specificities, kappas, CMs);
+crc_ara_displayResults(errorRates, sensitivities, specificities, ...
+    kappas, d_tWake, d_tSleep, CMs);
 
 stat_grRes = struct( ...
     'errorRates', errorRates, ...
     'sensitivities', sensitivities, ...
     'specificities', specificities, ...
     'kappas', kappas, ...
-    'CMs', CMs);
+    'CMs', CMs, ...
+    'd_tWake', d_tWake, ...
+    'd_tSleep', d_tSleep);
 
 % Consider where all SW series are set as sleep/wake/random
 % crc_ara_extremeCase(trueSW);
