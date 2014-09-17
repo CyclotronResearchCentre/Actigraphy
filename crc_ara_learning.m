@@ -23,7 +23,6 @@ def_learn = crc_ara_get_defaults('learn');
 sleepIndex = find(diff(SW)==-1);
 wakeIndex = find(diff(SW)==1);
 
-
 %% Divide SW into subwindows and extract interesting features
 features = [];
 windowLength = def_learn.windowLength;

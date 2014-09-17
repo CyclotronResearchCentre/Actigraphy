@@ -24,8 +24,13 @@ function crc_ara_defaults
 global crc_ara_def
 
 %% Directory
-crc_ara_def.dir.datadir = 'C:\Dropbox\Work\4_Partage\Actigraphy_TMS'; % Directory where the *.AWD files are stored
-crc_ara_def.dir.refdir  = 'C:\Dropbox\Work\4_Partage\Actigraphy_TMS'; % Directory where the reference .xls files are stored
+if ispc
+    crc_ara_def.dir.datadir = 'C:\Dropbox\Work\4_Partage\Actigraphy_TMS'; % Directory where the *.AWD files are stored
+    crc_ara_def.dir.refdir  = 'C:\Dropbox\Work\4_Partage\Actigraphy_TMS'; % Directory where the reference .xls files are stored
+else
+    crc_ara_def.dir.datadir = '/Users/chrisp/Dropbox/Work/4_Partage/Actigraphy_TMS'; % Directory where the *.AWD files are stored
+    crc_ara_def.dir.refdir  = '/Users/chrisp/Dropbox/Work/4_Partage/Actigraphy_TMS'; % Directory where the reference .xls files are stored
+end
 
 %% Modes for the main function
 % crc_ara_def.mode.INDIVIDUAL = 1;

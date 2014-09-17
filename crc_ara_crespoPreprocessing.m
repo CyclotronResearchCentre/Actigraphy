@@ -93,12 +93,6 @@ for ii = 1:numel(x)
     xf(ii) = median(medWin);
 end
 
-% Lw = round(60 * winAlpha * (60 / resolution)); % The median window has a length of 60 * alpha minutes
-% for i = 1:length(ACTI)
-%     medianWindow = xp(i:i+Lw);
-%     xf(i) = median(medianWindow);
-% end;
-
 %% y1 is computed
 
 p = crc_percentile(xf, percentile);
@@ -107,7 +101,6 @@ y1(xf>p) = AWAKE;
 y1(xf<=p) = ASLEEP;
 
 %% Opening - closing
-
 % Lp = (60 + 1) * (60 / resolution); % Opening-closing by a window of 61 minutes
 Lp = (180 + 1) * (60 / resolution); % Opening-closing by a window of 181 minutes
 morphWindow = linspace(AWAKE, AWAKE, Lp);

@@ -54,6 +54,8 @@ if nargin<1,
         [], datadir, '.AWD'); %Show all .AWD files in the directory datadir
 end
 nbSecPerDay = 24*60*60;
+strline = '--------------------------';
+fprintf('%s \n', strline);
 
 %% Get Acti data & clean up, if not provided
 if ischar(fn_dat)
@@ -91,13 +93,16 @@ nbDataPerDay = nbSecPerDay / resolution;
 
 %% Extract the SW cycle
 % Preprocessing stage, using Crespo algo.
+fprintf('Pre-scoring. \n');
 [SW, x, xf, y1] = crc_ara_crespoPreprocessing(ACTI, resolution); %#ok<*NASGU,*ASGLU>
 % crc_ara_plotSW(subjName, ACTI, SW, resolution, t);
 
 if useNN
+    fprintf('NN learning and testing. \n');
     % Processing stage, using the neural network
     [SW] = crc_ara_learning(ACTI, SW, resolution);
 end
+fprintf('%s \n', strline);
 
 %% Plot results and get things out
 if option.dispActiSW
