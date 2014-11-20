@@ -6,15 +6,40 @@ function varargout = crc_ara_main(datafile,option)
 %
 % INPUT
 % - datafile : list of files to process, if not use spm_select
-% - optin    : mode of operation:
+% - option    : mode of operation:
 %       . 1, analysis a series of single files (INDIVIDUAL)[default]
 %       . 2, analysis and compares with soem ground truth a
 %            series of single file (COMPARISON)
 %       . 3, analysis a series of single files and perform some
 %            group stats (GROUP)
+% OUTPUT
+% depending on the mode of operation (1/2/3):
+% - 1, [SW, data, stat_anaRes]
+% - 2, [SW, data, trueV, trueSW, stat_anaRes, stat_compRes]
+% - 3, [stat_grRes]
+% where
+% - SW : Estimated sleep wake cycle
+% - data : a structure containing the data and some other info
+%   . ACTI : actigraphic data
+%   . resolution : temporal resolution
+%   . nbDays : number of days of recording
+%   . startTime : start date & time
+%   . t : time regressor for plot
+%   . subjName : subject name (from file name)
+% - stat_anaRes : some processed results, if requested. Otherwise [].
+% - trueV : a structure containing the true values
+%   . trueSW, true sleep/wake series generated from the true sleep &
+%             wake times
+%   . bedDate, bed times
+%   . upDate, up times
+%   . sleepDate, sleep times
+%   . wakeDate wake times
+% - stat_compRes : stats from the comparison between manual and automatic
+%               scoring
+% - stat_grRes : structure with group statistics, see subfunction for details
 %
 % NOTE: to use the file selection GUI, SPM must be installed and set up
-% (path defintion!)
+% (path definition!)
 %_______________________________________________________________________
 % Copyright (C) 2014 Cyclotron Research Centre
 
