@@ -8,7 +8,7 @@ function varargout = crc_ara_main(datafile,option)
 % - datafile : list of files to process, if not use spm_select
 % - option    : mode of operation:
 %       . 1, analysis a series of single files (INDIVIDUAL)[default]
-%       . 2, analysis and compares with soem ground truth a
+%       . 2, analysis and compares with some ground truth a
 %            series of single file (COMPARISON)
 %       . 3, analysis a series of single files and perform some
 %            group stats (GROUP)
